@@ -1,27 +1,51 @@
-# Data Analysis Portfolio
+# 👋 Welcome to Lydia Jung's Portfolio
 
-A simple static portfolio site (plain HTML/CSS/JS, no build step) modeled on the
-[huhsu1.github.io](https://huhsu1.github.io/) layout: a landing page listing projects,
-a Resume button, and per-project pages with a live demo plus the reasoning behind it —
-tailored to data analysis work (Chart.js demos, statistical write-ups, etc.).
+**Live site: [lydiajung02.github.io](https://lydiajung02.github.io/)**
+
+A static portfolio site (plain HTML/CSS/JS, no build step) modeled on the
+[huhsu1.github.io](https://huhsu1.github.io/) layout: a landing page listing projects, a Resume
+button, and per-project pages with a live demo plus the reasoning behind it.
+
+---
+
+## About Me
+
+- UC Berkeley, B.S. in Data Science, Domain Emphasis on Cognition
+- Aspiring Data Analyst / Data Scientist
+- Interested in data-driven decision making, data visualization, and statistical modeling
+
+## Featured Projects
+
+| Project | Type | Summary |
+|--------|------|---------|
+| [U.S. Renewable Energy & Emissions Analysis](projects/renewable-energy-emissions.html) | Notebook, Report | UC Berkeley Data 102 final project — hypothesis testing and OLS regression on EPA eGRID data. |
+| [LWVO Member Demographics Analysis](projects/lwvo-demographics-analysis.html) | Poster | DataGood @ Berkeley consulting project — survey + choropleth analysis for the League of Women Voters of Oakland. |
+| [Odys eVTOL Revenue Strategy](projects/odys-evtol-revenue.html) | Slide Deck | Modeled airline revenue increase from integrating Odys eVTOL aircraft, using flight/catchment-airport data. |
+| [Sentiment Trend Modeling of ChatGPT Tweets](projects/chatgpt-sentiment-nlp.html) | Independent project | NLP sentiment analysis of ChatGPT-related tweets over time. |
+
+The original deliverables for the first three (notebook, written report, poster, slide deck) are
+included under `projects/files/`. The full renewable-energy notebook and its own project README
+live in the separate [lydiajung-ds-portfolio](https://github.com/lydiajung02/lydiajung-ds-portfolio)
+repo, which this site links out to.
 
 ## Structure
 
 ```
 index.html                       landing page (project list)
-resume.html                      resume page (real content, matches assets/resume.pdf)
+resume.html                      resume page (matches assets/resume.pdf)
 projects/
   renewable-energy-emissions.html
+  lwvo-demographics-analysis.html
+  odys-evtol-revenue.html
   chatgpt-sentiment-nlp.html
+  files/                         real PDFs (report, poster, deck) embedded by the pages above
 assets/
   css/style.css                  shared styles + light/dark theme
   js/theme.js                    dark mode toggle
-  resume.pdf                     generated resume PDF (regenerate via scripts below if you edit it)
+  resume.pdf
 ```
 
 ## Preview locally
-
-No build step needed. Either open `index.html` directly in a browser, or serve it:
 
 ```bash
 python3 -m http.server 8000
@@ -29,37 +53,19 @@ python3 -m http.server 8000
 
 then visit `http://localhost:8000`.
 
-## Known placeholders / things to finish
-
-- The charts on both project pages are **illustrative/synthetic** reconstructions of the
-  described results (matching shape, not your real numbers) — swap in real charts/output
-  once you pull the actual notebooks over from wherever the original analysis lives.
-- Each project page links to `https://github.com/lydiajung02` as a stand-in for the actual
-  project repo/notebook — update those links once the real code has a home (ideally in
-  this same repo, e.g. under a `notebooks/` folder).
-- `resume.html` and `assets/resume.pdf` mirror your uploaded resume as of Sep 2026 — if you
-  update the resume, edit `resume.html` and regenerate the PDF (a `reportlab`-based script
-  was used; simplest path is re-exporting your resume doc as PDF directly and replacing
-  `assets/resume.pdf`).
-
-## Customize further
-
-- **Projects**: edit or add entries in `projects/`, and update the list in `index.html` to match.
-- **Colors/theme**: CSS variables are defined at the top of `assets/css/style.css`
-  under `:root` (light) and `:root[data-theme="dark"]` (dark).
-
 ## Publish to GitHub Pages
 
-This is set up for **https://github.com/lydiajung02/lydiajung-ds-portfolio** as a project
-repo (not the special `username.github.io` repo), so it needs Pages enabled explicitly:
+This repo is named `lydiajung02.github.io`, so GitHub serves it automatically at the root
+domain once pushed to `main` — no Pages settings needed:
 
 ```bash
-git remote add origin https://github.com/lydiajung02/lydiajung-ds-portfolio.git
 git push -u origin main
 ```
 
-Then on GitHub: **Settings → Pages** → Source: `Deploy from a branch` → Branch: `main`, folder `/ (root)`.
-The site will be live at **https://lydiajung02.github.io/lydiajung-ds-portfolio/** a minute or two
-after Pages is enabled.
+Site goes live at **https://lydiajung02.github.io/** within a minute or two.
 
-(Create the repo on GitHub first, named exactly `lydiajung-ds-portfolio`, if it doesn't exist yet.)
+## Let's Connect
+
+- seowoo29@berkeley.edu
+- [LinkedIn](https://www.linkedin.com/in/lydia-jung/)
+- [GitHub](https://github.com/lydiajung02)

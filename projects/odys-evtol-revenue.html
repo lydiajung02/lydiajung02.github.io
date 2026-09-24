@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odys eVTOL Revenue Strategy — Lydia Jung</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="../index.html">Lydia Jung</a>
+    <nav class="site-nav">
+      <a href="../index.html">Projects</a>
+      <a href="../resume.html">Resume</a>
+      <button class="theme-toggle" aria-label="Toggle dark mode">&#9789;</button>
+    </nav>
+  </div>
+</header>
+
+<main class="page-content">
+  <div class="wrapper">
+    <div class="project-header">
+      <span class="project-meta">E@B x Odys Aviation · Python · Geospatial · Flight Economics</span>
+      <h1>Odys eVTOL Revenue Strategy</h1>
+      <p class="project-summary">A consulting analysis for Odys Aviation and Delta/American Airlines: how much could each airline's annual revenue grow by integrating Odys eVTOL aircraft at specific hub airports, based on real flight and catchment-area travel data?</p>
+      <p class="project-meta">Team: Mansi Topandasani, Selin Musa, Jenny Qiu, Jayu Patel, Viraj Bansal, Lydia Jung, Ethan Wang</p>
+    </div>
+
+    <div class="metric-row">
+      <div class="metric"><div class="value">+2.4%</div><div class="label">Delta revenue (MSP &amp; DTW)</div></div>
+      <div class="metric"><div class="value">+1.6%</div><div class="label">American revenue (ORD)</div></div>
+      <div class="metric"><div class="value">3</div><div class="label">Hub regions analyzed</div></div>
+    </div>
+
+    <p>
+      <a class="btn" href="files/odys-evtol-revenue-deck.pdf" target="_blank">View Full Slide Deck (PDF)</a>
+    </p>
+
+    <div class="section">
+      <h2>Live Demo</h2>
+      <div class="demo-card">
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">The headline result from the deck: projected annual revenue increase by airline if Odys eVTOLs were integrated at their strongest catchment hubs.</p>
+        <canvas id="revenueChart" height="220"></canvas>
+      </div>
+      <div class="demo-card" style="padding:0; overflow:hidden; margin-top:18px;">
+        <iframe src="files/odys-evtol-revenue-deck.pdf" title="Odys eVTOL revenue strategy slide deck" style="width:100%; height:600px; border:none; display:block;"></iframe>
+      </div>
+      <p style="color:var(--muted); font-size:12.5px; margin-top:10px;">
+        If the deck doesn't render inline (common on mobile), use the "View Full Slide Deck" button above.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>How Did I Do This?</h2>
+      <ol class="steps">
+        <li>
+          <strong>1. Framing the objective</strong>
+          The question Odys and the airlines actually needed answered wasn't "would eVTOLs help" in the abstract — it was where specifically to deploy a limited number of aircraft first, so the analysis had to end in a ranked, hub-by-hub revenue estimate, not just a general feasibility case.
+        </li>
+        <li>
+          <strong>2. Catchment airport assignment</strong>
+          Mapped each major hub (SEA, ORD, DTW, MSP, DFW, IAH) to its catchment airports — the smaller regional/connecting airports that realistically feed passenger volume into it — since an eVTOL's value comes from shortening the regional leg into a hub, not the long-haul leg out of it.
+        </li>
+        <li>
+          <strong>3. Filtering flyer types</strong>
+          Split passenger data into point-to-point (P2P) vs. connecting (CE) flyers, because these two groups respond differently to a new short-hop option — a P2P flyer is a direct revenue opportunity for regional eVTOL service, while a connecting flyer's value depends on whether the eVTOL leg feeds a longer itinerary.
+        </li>
+        <li>
+          <strong>4. Revenue analysis by region</strong>
+          Ran the revenue model separately for three hub groupings — Pacific Northwest (SEA-Tac for Delta), Midwest (DTW &amp; MSP for Delta, ORD for American), and the Houston Triangle (DFW for American, IAH for United) — rather than one blended national number, since catchment density and existing route economics differ enough between regions that averaging them would have hidden the actual best-first-deployment answer.
+        </li>
+        <li>
+          <strong>5. Results</strong>
+          The Midwest came back as the strongest opportunity for both airlines analyzed: Delta could grow annual revenue by an estimated 2.4% integrating eVTOLs at MSP and DTW, and American by 1.6% at ORD — driven by the high number of catchment airports feeding those specific hubs.
+        </li>
+        <li>
+          <strong>6. Supporting tools</strong>
+          Built reusable helper functions (total revenue, driver counts, drivers organized by income group, most popular tracts) so the underlying model could be re-run for other hub/airline combinations beyond the three presented, rather than being a one-off calculation.
+        </li>
+      </ol>
+    </div>
+
+    <a class="back-link" href="../index.html">&larr; Back to all projects</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col">
+      <h3>Lydia Jung</h3>
+      <ul>
+        <li>seowoo29@berkeley.edu</li>
+        <li>Rancho Palos Verdes, CA</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3>Elsewhere</h3>
+      <ul>
+        <li><a href="https://github.com/lydiajung02">github.com/lydiajung02</a></li>
+        <li><a href="https://www.linkedin.com/in/lydia-jung/">linkedin.com/in/lydia-jung</a></li>
+      </ul>
+    </div>
+    <div class="footer-col footer-tagline">
+      <p>Data analysis portfolio — built to show the reasoning behind each project, not just the result.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+function chartColors() {
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return {
+    text: dark ? '#e7e7ea' : '#222222',
+    grid: dark ? '#2a2b31' : '#e5e5e5',
+    accent: dark ? '#6fa8ff' : '#2a7ae2',
+    accent2: dark ? '#f2a65a' : '#e07b39'
+  };
+}
+var c = chartColors();
+Chart.defaults.color = c.text;
+Chart.defaults.borderColor = c.grid;
+
+new Chart(document.getElementById('revenueChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Delta (MSP & DTW)', 'American (ORD)'],
+    datasets: [{
+      label: 'Projected annual revenue increase',
+      data: [2.4, 1.6],
+      backgroundColor: [c.accent, c.accent2]
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: { x: { title: { display: true, text: 'Annual revenue increase (%)' }, max: 3 } }
+  }
+});
+</script>
+
+</body>
+</html>
