@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Forecasting with Time Series — Lydia Jung</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="../index.html">Lydia Jung</a>
+    <nav class="site-nav">
+      <a href="../index.html">Projects</a>
+      <a href="../resume.html">Resume</a>
+      <button class="theme-toggle" aria-label="Toggle dark mode">&#9789;</button>
+    </nav>
+  </div>
+</header>
+
+<main class="page-content">
+  <div class="wrapper">
+    <div class="project-header">
+      <span class="project-meta">Jun 2025 · ARIMA · Prophet · Python</span>
+      <h1>Sales Forecasting with Time Series</h1>
+      <p class="project-summary">A 6-month-ahead forecast of monthly retail sales, built to give the inventory team a number they could actually plan purchase orders against.</p>
+    </div>
+
+    <div class="metric-row">
+      <div class="metric"><div class="value">6.3%</div><div class="label">MAPE (holdout)</div></div>
+      <div class="metric"><div class="value">6 mo</div><div class="label">Forecast horizon</div></div>
+      <div class="metric"><div class="value">3 yrs</div><div class="label">Training history</div></div>
+    </div>
+
+    <div class="section">
+      <h2>Live Demo</h2>
+      <div class="demo-card">
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Historical monthly sales with the forecast and 80% confidence band.</p>
+        <canvas id="forecastChart" height="260"></canvas>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>How Did I Do This?</h2>
+      <ol class="steps">
+        <li>
+          <strong>1. Data prep</strong>
+          Aggregated daily transactions to monthly totals, aligned to calendar months, and filled two short gaps (a system outage month) using the prior year's same-month value adjusted for the year-over-year growth trend rather than a flat interpolation.
+        </li>
+        <li>
+          <strong>2. Decomposition</strong>
+          Ran a seasonal decomposition first to confirm what I was dealing with: a clear upward trend plus a strong December seasonal spike (~1.6x an average month). This ruled out a naive linear-trend model on its own.
+        </li>
+        <li>
+          <strong>3. Model selection</strong>
+          Compared a seasonal ARIMA (SARIMA, tuned via grid search on (p,d,q)(P,D,Q)) against Facebook Prophet, which handles holiday effects more directly. Prophet edged out SARIMA on holdout error and needed far less manual tuning, so it became the production model.
+        </li>
+        <li>
+          <strong>4. Backtesting</strong>
+          Used walk-forward validation — train on months 1–30, predict month 31, then roll forward — rather than a single train/test split, since a single split can get lucky or unlucky on which months land in the test set. Averaged MAPE across folds: 6.3%.
+        </li>
+        <li>
+          <strong>5. Handoff</strong>
+          Delivered the forecast as a monthly-refreshed CSV plus this chart, with the confidence band included deliberately so the inventory team would size orders around a range, not a single point estimate.
+        </li>
+      </ol>
+    </div>
+
+    <a class="back-link" href="../index.html">&larr; Back to all projects</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col">
+      <h3>Lydia Jung</h3>
+      <ul><li>example@example.com</li></ul>
+    </div>
+    <div class="footer-col">
+      <h3>Elsewhere</h3>
+      <ul><li><a href="https://github.com/lydiajung02">github.com/lydiajung02</a></li></ul>
+    </div>
+    <div class="footer-col footer-tagline">
+      <p>Data analysis portfolio — built to show the reasoning behind each project, not just the result.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+function chartColors() {
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return {
+    text: dark ? '#e7e7ea' : '#222222',
+    grid: dark ? '#2a2b31' : '#e5e5e5',
+    accent: dark ? '#6fa8ff' : '#2a7ae2',
+    band: dark ? 'rgba(111,168,255,0.15)' : 'rgba(42,122,226,0.12)'
+  };
+}
+var c = chartColors();
+Chart.defaults.color = c.text;
+Chart.defaults.borderColor = c.grid;
+
+var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec',
+              'Jan','Feb','Mar','Apr','May','Jun'];
+var historical = [210,205,230,245,260,275,290,300,310,330,350,520,
+                   340,335,360,380,400,415];
+var forecast   = [null,null,null,null,null,null,null,null,null,null,null,null,
+                   null,null,null,null,null,415, 430, 445, 460, 500, 520, 700];
+var forecastHigh = [null,null,null,null,null,null,null,null,null,null,null,null,
+                     null,null,null,null,null,null, 460, 480, 500, 545, 570, 760];
+var forecastLow  = [null,null,null,null,null,null,null,null,null,null,null,null,
+                     null,null,null,null,null,null, 400, 410, 420, 455, 470, 640];
+var futureMonths = ['Jul','Aug','Sep','Oct','Nov','Dec'];
+var labels = months.concat(futureMonths);
+
+// pad historical to align lengths
+while (historical.length < labels.length) historical.push(null);
+
+new Chart(document.getElementById('forecastChart'), {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [
+      {
+        label: 'Historical sales ($K)',
+        data: historical,
+        borderColor: c.text,
+        backgroundColor: c.text,
+        pointRadius: 0,
+        tension: 0.2
+      },
+      {
+        label: 'Forecast upper (80% CI)',
+        data: forecastHigh,
+        borderColor: 'transparent',
+        backgroundColor: c.band,
+        fill: '+1',
+        pointRadius: 0
+      },
+      {
+        label: 'Forecast lower (80% CI)',
+        data: forecastLow,
+        borderColor: 'transparent',
+        backgroundColor: c.band,
+        pointRadius: 0
+      },
+      {
+        label: 'Forecast ($K)',
+        data: forecast,
+        borderColor: c.accent,
+        backgroundColor: c.accent,
+        borderDash: [5,4],
+        pointRadius: 0,
+        tension: 0.2
+      }
+    ]
+  },
+  options: {
+    interaction: { mode: 'index', intersect: false },
+    plugins: { legend: { labels: { filter: function(item){ return item.text.indexOf('CI') === -1; } } } },
+    scales: { y: { title: { display: true, text: 'Sales ($K)' } } }
+  }
+});
+</script>
+
+</body>
+</html>
