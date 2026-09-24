@@ -3,27 +3,21 @@
 A simple static portfolio site (plain HTML/CSS/JS, no build step) modeled on the
 [huhsu1.github.io](https://huhsu1.github.io/) layout: a landing page listing projects,
 a Resume button, and per-project pages with a live demo plus the reasoning behind it —
-tailored here to data analysis work (Chart.js demos, an interactive A/B test calculator, etc.).
+tailored to data analysis work (Chart.js demos, statistical write-ups, etc.).
 
 ## Structure
 
 ```
 index.html                       landing page (project list)
-resume.html                      placeholder resume page
+resume.html                      resume page (real content, matches assets/resume.pdf)
 projects/
-  customer-churn-prediction.html
-  covid19-trends-dashboard.html
-  ab-test-checkout-funnel.html
-  sales-forecasting.html
-  nyc-housing-price-analysis.html
+  renewable-energy-emissions.html
+  chatgpt-sentiment-nlp.html
 assets/
   css/style.css                  shared styles + light/dark theme
   js/theme.js                    dark mode toggle
-  resume.pdf                     <- put your real resume here
+  resume.pdf                     generated resume PDF (regenerate via scripts below if you edit it)
 ```
-
-All five projects currently ship with **placeholder content and synthetic demo data** —
-swap in your real projects, numbers, and writeups before publishing.
 
 ## Preview locally
 
@@ -35,38 +29,37 @@ python3 -m http.server 8000
 
 then visit `http://localhost:8000`.
 
-## Customize
+## Known placeholders / things to finish
 
-- **Name/email/links**: search-and-replace `example@example.com` and the footer/header
-  blocks across `index.html`, `resume.html`, and each file in `projects/`.
-- **Resume**: replace `assets/resume.pdf` with your actual PDF (create the `assets`
-  folder file if it doesn't exist yet) — the download button on `resume.html` already
-  points at that path.
-- **Projects**: edit or delete the entries in `projects/`, and update the list in
-  `index.html` to match. Each project page follows the same pattern: header/metrics →
-  "Live Demo" → "How Did I Do This?" steps.
+- The charts on both project pages are **illustrative/synthetic** reconstructions of the
+  described results (matching shape, not your real numbers) — swap in real charts/output
+  once you pull the actual notebooks over from wherever the original analysis lives.
+- Each project page links to `https://github.com/lydiajung02` as a stand-in for the actual
+  project repo/notebook — update those links once the real code has a home (ideally in
+  this same repo, e.g. under a `notebooks/` folder).
+- `resume.html` and `assets/resume.pdf` mirror your uploaded resume as of Sep 2026 — if you
+  update the resume, edit `resume.html` and regenerate the PDF (a `reportlab`-based script
+  was used; simplest path is re-exporting your resume doc as PDF directly and replacing
+  `assets/resume.pdf`).
+
+## Customize further
+
+- **Projects**: edit or add entries in `projects/`, and update the list in `index.html` to match.
 - **Colors/theme**: CSS variables are defined at the top of `assets/css/style.css`
   under `:root` (light) and `:root[data-theme="dark"]` (dark).
 
 ## Publish to GitHub Pages
 
-Since the target is `lydiajung02.github.io`, GitHub serves this repo's `main` branch
-root automatically once it's named exactly that:
+This is set up for **https://github.com/lydiajung02/lydiajung-ds-portfolio** as a project
+repo (not the special `username.github.io` repo), so it needs Pages enabled explicitly:
 
 ```bash
-git init
-git add .
-git commit -m "Initial data analysis portfolio"
-git branch -M main
-git remote add origin https://github.com/lydiajung02/lydiajung02.github.io.git
+git remote add origin https://github.com/lydiajung02/lydiajung-ds-portfolio.git
 git push -u origin main
 ```
 
-Then create the repo on GitHub first (name it exactly `lydiajung02.github.io`) if it
-doesn't exist yet, before pushing. The site will be live at
-`https://lydiajung02.github.io` within a minute or two of the push — no GitHub Pages
-settings changes needed for a `username.github.io` repo (it's served automatically).
+Then on GitHub: **Settings → Pages** → Source: `Deploy from a branch` → Branch: `main`, folder `/ (root)`.
+The site will be live at **https://lydiajung02.github.io/lydiajung-ds-portfolio/** a minute or two
+after Pages is enabled.
 
-If you'd rather host it as a project page instead (e.g. `lydiajung02.github.io/portfolio`),
-name the repo anything else and enable Pages for it in the repo's Settings → Pages,
-serving from the `main` branch `/ (root)`.
+(Create the repo on GitHub first, named exactly `lydiajung-ds-portfolio`, if it doesn't exist yet.)

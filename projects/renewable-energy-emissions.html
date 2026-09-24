@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>U.S. Renewable Energy &amp; Emissions Analysis — Lydia Jung</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="../index.html">Lydia Jung</a>
+    <nav class="site-nav">
+      <a href="../index.html">Projects</a>
+      <a href="../resume.html">Resume</a>
+      <button class="theme-toggle" aria-label="Toggle dark mode">&#9789;</button>
+    </nav>
+  </div>
+</header>
+
+<main class="page-content">
+  <div class="wrapper">
+    <div class="project-header">
+      <span class="project-meta">Python · Statsmodels · OLS Regression · Hypothesis Testing</span>
+      <h1>U.S. Renewable Energy &amp; Emissions Analysis</h1>
+      <p class="project-summary">A statistical analysis of whether state-level renewable energy adoption is associated with lower emissions trends, using t-tests with multiple-comparison correction and OLS regression to separate a real signal from noise across many states and years.</p>
+    </div>
+
+    <div class="callout">
+      This page summarizes an academic/independent project referenced on my resume. Full code and the underlying
+      dataset live in my <a href="https://github.com/lydiajung02">GitHub</a> — this write-up focuses on the
+      reasoning and statistical choices behind it.
+    </div>
+
+    <div class="section">
+      <h2>Live Demo</h2>
+      <div class="demo-card">
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Illustrative view of the core relationship this project tested: renewable energy share vs. per-capita emissions across states, with the fitted OLS trend.</p>
+        <canvas id="reChart" height="260"></canvas>
+        <p style="color:var(--muted); font-size:12.5px; margin-bottom:0;">Chart shows representative/synthetic points reproducing the shape of the real result for demonstration — see the repo for the actual dataset and output.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>How Did I Do This?</h2>
+      <ol class="steps">
+        <li>
+          <strong>1. Framing the question</strong>
+          Rather than just plotting a correlation, I framed this as a hypothesis test: does renewable energy adoption meaningfully associate with emissions trends across states, once other factors are accounted for — or could an apparent relationship be explained by chance given how many states and years are being compared at once?
+        </li>
+        <li>
+          <strong>2. Data cleaning &amp; feature engineering</strong>
+          Assembled a state-year panel of renewable energy share and emissions figures in Python, cleaned inconsistent units/reporting gaps across sources, and engineered features to make state-year observations comparable (e.g. per-capita emissions rather than raw totals).
+        </li>
+        <li>
+          <strong>3. Hypothesis testing with correction</strong>
+          Ran t-tests comparing emissions trends across groups of states, but with many states being compared simultaneously, the chance of a false positive from testing alone rises fast — so I applied a multiple-comparison correction rather than trusting raw p-values, to keep the overall false-positive rate honest.
+        </li>
+        <li>
+          <strong>4. OLS regression</strong>
+          Followed up the group comparisons with an OLS regression of emissions trend on renewable energy adoption (plus relevant controls), to quantify the size of the association rather than just whether it existed.
+        </li>
+        <li>
+          <strong>5. Policy framing</strong>
+          Translated the regression output into insights aimed at a policy audience — being explicit that this is observational, associational evidence, not a randomized causal estimate, when writing up recommendations.
+        </li>
+      </ol>
+    </div>
+
+    <a class="back-link" href="../index.html">&larr; Back to all projects</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col">
+      <h3>Lydia Jung</h3>
+      <ul>
+        <li>seowoo29@berkeley.edu</li>
+        <li>Rancho Palos Verdes, CA</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3>Elsewhere</h3>
+      <ul>
+        <li><a href="https://github.com/lydiajung02">github.com/lydiajung02</a></li>
+        <li><a href="https://www.linkedin.com/in/lydia-jung/">linkedin.com/in/lydia-jung</a></li>
+      </ul>
+    </div>
+    <div class="footer-col footer-tagline">
+      <p>Data analysis portfolio — built to show the reasoning behind each project, not just the result.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+function chartColors() {
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return {
+    text: dark ? '#e7e7ea' : '#222222',
+    grid: dark ? '#2a2b31' : '#e5e5e5',
+    accent: dark ? '#6fa8ff' : '#2a7ae2',
+    accent2: dark ? '#f2a65a' : '#e07b39'
+  };
+}
+var c = chartColors();
+Chart.defaults.color = c.text;
+Chart.defaults.borderColor = c.grid;
+
+function seedRandom(seed) {
+  return function () { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+}
+var rand = seedRandom(7);
+var pts = [];
+for (var i = 0; i < 50; i++) {
+  var renewShare = rand() * 45;
+  var emissions = 14 - renewShare * 0.15 + (rand() - 0.5) * 3;
+  pts.push({ x: Math.round(renewShare * 10) / 10, y: Math.round(Math.max(2, emissions) * 10) / 10 });
+}
+function linreg(points) {
+  var n = points.length, sumX=0,sumY=0,sumXY=0,sumXX=0;
+  points.forEach(function(p){ sumX+=p.x; sumY+=p.y; sumXY+=p.x*p.y; sumXX+=p.x*p.x; });
+  var slope=(n*sumXY-sumX*sumY)/(n*sumXX-sumX*sumX);
+  var intercept=(sumY-slope*sumX)/n;
+  return {slope:slope, intercept:intercept};
+}
+var reg = linreg(pts);
+var xs = pts.map(function(p){return p.x;});
+var minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+var trend = [{x:minX, y:reg.slope*minX+reg.intercept}, {x:maxX, y:reg.slope*maxX+reg.intercept}];
+
+new Chart(document.getElementById('reChart'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      { label: 'States (by year)', data: pts, backgroundColor: c.accent + 'aa', pointRadius: 3 },
+      { label: 'OLS trend', data: trend, type: 'line', borderColor: c.accent2, borderWidth: 2, pointRadius: 0 }
+    ]
+  },
+  options: {
+    scales: {
+      x: { title: { display: true, text: 'Renewable energy share (%)' } },
+      y: { title: { display: true, text: 'Per-capita emissions (metric tons)' } }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+</script>
+
+</body>
+</html>

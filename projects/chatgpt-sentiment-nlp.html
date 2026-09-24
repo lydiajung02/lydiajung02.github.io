@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentiment Trend Modeling of ChatGPT Tweets — Lydia Jung</title>
+<link rel="stylesheet" href="../assets/css/style.css">
+<script src="../assets/js/theme.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrapper">
+    <a class="site-title" href="../index.html">Lydia Jung</a>
+    <nav class="site-nav">
+      <a href="../index.html">Projects</a>
+      <a href="../resume.html">Resume</a>
+      <button class="theme-toggle" aria-label="Toggle dark mode">&#9789;</button>
+    </nav>
+  </div>
+</header>
+
+<main class="page-content">
+  <div class="wrapper">
+    <div class="project-header">
+      <span class="project-meta">Python · NLP · langdetect · wordcloud</span>
+      <h1>Sentiment Trend Modeling of ChatGPT Tweets</h1>
+      <p class="project-summary">An NLP analysis of public sentiment toward ChatGPT over time, built from a large volume of tweets — cleaned, language-filtered, scored for sentiment, and tracked as a trend rather than a single snapshot.</p>
+    </div>
+
+    <div class="callout">
+      This page summarizes an academic/independent project referenced on my resume. Full code and the underlying
+      dataset live in my <a href="https://github.com/lydiajung02">GitHub</a> — this write-up focuses on the
+      reasoning and NLP pipeline behind it.
+    </div>
+
+    <div class="section">
+      <h2>Live Demo</h2>
+      <div class="demo-card">
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Illustrative view of the core finding: average sentiment score trending downward across cohorts of tweets over time.</p>
+        <canvas id="sentimentChart" height="260"></canvas>
+        <p style="color:var(--muted); font-size:12.5px; margin-bottom:0;">Chart shows a representative/synthetic reconstruction of the trend shape for demonstration — see the repo for the actual dataset and output.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>How Did I Do This?</h2>
+      <ol class="steps">
+        <li>
+          <strong>1. Data collection</strong>
+          Worked with a large volume of ChatGPT-related tweets, which meant the first real problem wasn't sentiment scoring — it was volume and noise: duplicate retweets, non-English text, and bot-like spam all needed to be filtered before any analysis was meaningful.
+        </li>
+        <li>
+          <strong>2. Preprocessing</strong>
+          Used <code>langdetect</code> to filter to English-language tweets specifically, since sentiment models trained on English text give unreliable scores on other languages rather than simply failing loudly. Standard NLP cleaning followed: stripping URLs/mentions/hashtags, lowercasing, and removing boilerplate retweet text.
+        </li>
+        <li>
+          <strong>3. Exploratory text analysis</strong>
+          Used <code>wordcloud</code> alongside frequency counts to sanity-check what people were actually talking about before trusting any sentiment number — this surfaced topic shifts (e.g. spikes tied to specific ChatGPT feature releases or news cycles) that later explained some of the sentiment swings.
+        </li>
+        <li>
+          <strong>4. Sentiment scoring &amp; trend modeling</strong>
+          Scored each cleaned tweet for sentiment and aggregated into time-based cohorts rather than looking at individual tweets, since single-tweet sentiment is noisy but the trend across thousands of tweets per period is stable enough to interpret.
+        </li>
+        <li>
+          <strong>5. Statistical comparison</strong>
+          Used comparative analysis and A/B-testing-style comparisons between early and later cohorts to confirm the apparent decline in positive sentiment wasn't just noise, rather than eyeballing the trend line alone.
+        </li>
+      </ol>
+    </div>
+
+    <a class="back-link" href="../index.html">&larr; Back to all projects</a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrapper">
+    <div class="footer-col">
+      <h3>Lydia Jung</h3>
+      <ul>
+        <li>seowoo29@berkeley.edu</li>
+        <li>Rancho Palos Verdes, CA</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h3>Elsewhere</h3>
+      <ul>
+        <li><a href="https://github.com/lydiajung02">github.com/lydiajung02</a></li>
+        <li><a href="https://www.linkedin.com/in/lydia-jung/">linkedin.com/in/lydia-jung</a></li>
+      </ul>
+    </div>
+    <div class="footer-col footer-tagline">
+      <p>Data analysis portfolio — built to show the reasoning behind each project, not just the result.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+function chartColors() {
+  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return {
+    text: dark ? '#e7e7ea' : '#222222',
+    grid: dark ? '#2a2b31' : '#e5e5e5',
+    accent: dark ? '#6fa8ff' : '#2a7ae2'
+  };
+}
+var c = chartColors();
+Chart.defaults.color = c.text;
+Chart.defaults.borderColor = c.grid;
+
+var cohorts = ['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6','Wk 7','Wk 8','Wk 9','Wk 10'];
+var sentiment = [0.42, 0.39, 0.36, 0.33, 0.30, 0.27, 0.24, 0.22, 0.19, 0.17];
+
+new Chart(document.getElementById('sentimentChart'), {
+  type: 'line',
+  data: {
+    labels: cohorts,
+    datasets: [{
+      label: 'Avg. sentiment score',
+      data: sentiment,
+      borderColor: c.accent,
+      backgroundColor: c.accent,
+      tension: 0.3,
+      pointRadius: 3
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: { y: { title: { display: true, text: 'Sentiment score (-1 to 1)' } } }
+  }
+});
+</script>
+
+</body>
+</html>
