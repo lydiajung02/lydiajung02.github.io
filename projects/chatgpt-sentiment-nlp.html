@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sentiment Trend Modeling of ChatGPT Tweets — Lydia Jung</title>
+<title>Sentiment Analysis of ChatGPT Tweets — Lydia Jung</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <script src="../assets/js/theme.js"></script>
 </head>
@@ -23,49 +23,91 @@
 <main class="page-content">
   <div class="wrapper">
     <div class="project-header">
-      <span class="project-meta">Python · NLP · langdetect · wordcloud</span>
-      <h1>Sentiment Trend Modeling of ChatGPT Tweets</h1>
-      <p class="project-summary">An NLP analysis of public sentiment toward ChatGPT over time, built from a large volume of tweets — cleaned, language-filtered, scored for sentiment, and tracked as a trend rather than a single snapshot.</p>
+      <span class="project-meta">Python · langdetect · VADER · Permutation Testing</span>
+      <h1>Sentiment Analysis of ChatGPT Tweets for Social Media &amp; AI Industry Insights</h1>
+      <p class="project-summary">Using Python, I pulled about 224,000 tweets mentioning ChatGPT from its first three months after launch (Nov 30, 2022 – Feb 24, 2023) and labeled their sentiment with VADER. Positive tweets outnumbered negative ones about 3.4 to 1, and positive sentiment dipped in early 2023 — timing that lines up with the "woke ChatGPT" bias debate.</p>
+      <p class="project-meta">Mentor: James · Team: Vinh Bui, Lydia Jung, Mark Nguyen, Linjay Zeng, Daniel Lancet</p>
     </div>
 
-    <div class="callout">
-      This page summarizes an academic/independent project referenced on my resume. Full code and the underlying
-      dataset live in my <a href="https://github.com/lydiajung02">GitHub</a> — this write-up focuses on the
-      reasoning and NLP pipeline behind it.
-    </div>
-
-    <div class="section">
-      <h2>Live Demo</h2>
-      <div class="demo-card">
-        <p style="margin-top:0; color:var(--muted); font-size:14px;">Illustrative view of the core finding: average sentiment score trending downward across cohorts of tweets over time.</p>
-        <canvas id="sentimentChart" height="260"></canvas>
-        <p style="color:var(--muted); font-size:12.5px; margin-bottom:0;">Chart shows a representative/synthetic reconstruction of the trend shape for demonstration — see the repo for the actual dataset and output.</p>
-      </div>
+    <div class="metric-row">
+      <div class="metric"><div class="value">3.4 : 1</div><div class="label">Positive : negative tweets</div></div>
+      <div class="metric"><div class="value">~224K</div><div class="label">Tweets analyzed</div></div>
+      <div class="metric"><div class="value">+78%</div><div class="label">Daily volume growth, Dec → Feb</div></div>
     </div>
 
     <div class="section">
-      <h2>How Did I Do This?</h2>
+      <h2>Executive Summary</h2>
+      <p>After finding that positive tweets outnumbered negative ones about 3.4 to 1, and that positive sentiment dipped in early 2023, I conclude that:</p>
+      <ol class="steps">
+        <li>The launch drew more enthusiasm than concern, with positive tweets far outnumbering negative ones (56% vs. 16.5%).</li>
+        <li>The decline in positive sentiment (57.1% to 55.2%, Jan to Feb 2023) has a possible correlation to the debate that arose over people's concerns about AI bias.</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>Significance of This Project</h2>
+      <p>Public reception is essential to how well OpenAI can grow ChatGPT, since adoption depends on whether people welcome or reject it. Immediately following the November 2022 launch: how can we quantify public opinion on Twitter to gauge how well ChatGPT is being received, track how that opinion changes over time, and find the events that line up with any shifts in sentiment?</p>
+    </div>
+
+    <div class="section">
+      <h2>Methodology</h2>
       <ol class="steps">
         <li>
-          <strong>1. Data collection</strong>
-          Worked with a large volume of ChatGPT-related tweets, which meant the first real problem wasn't sentiment scoring — it was volume and noise: duplicate retweets, non-English text, and bot-like spam all needed to be filtered before any analysis was meaningful.
+          <strong>1. Clean &amp; detect language</strong>
+          Cleaned the raw tweet data with Python and detected each tweet's language with <code>langdetect</code>.
         </li>
         <li>
-          <strong>2. Preprocessing</strong>
-          Used <code>langdetect</code> to filter to English-language tweets specifically, since sentiment models trained on English text give unreliable scores on other languages rather than simply failing loudly. Standard NLP cleaning followed: stripping URLs/mentions/hashtags, lowercasing, and removing boilerplate retweet text.
+          <strong>2. Preprocess &amp; explore</strong>
+          Preprocessed the English tweets and built a word cloud of the most frequent words to sanity-check the topic before scoring sentiment.
         </li>
         <li>
-          <strong>3. Exploratory text analysis</strong>
-          Used <code>wordcloud</code> alongside frequency counts to sanity-check what people were actually talking about before trusting any sentiment number — this surfaced topic shifts (e.g. spikes tied to specific ChatGPT feature releases or news cycles) that later explained some of the sentiment swings.
+          <strong>3. Label sentiment &amp; track over time</strong>
+          Labeled sentiment with VADER and tracked it over time, then researched news from the period to look for events that line up with any shifts.
         </li>
         <li>
-          <strong>4. Sentiment scoring &amp; trend modeling</strong>
-          Scored each cleaned tweet for sentiment and aggregated into time-based cohorts rather than looking at individual tweets, since single-tweet sentiment is noisy but the trend across thousands of tweets per period is stable enough to interpret.
+          <strong>4. Test engagement by sentiment</strong>
+          Ran a permutation A/B test to check whether positive and negative tweets get different likes, after filtering out zero-engagement tweets and outliers.
         </li>
-        <li>
-          <strong>5. Statistical comparison</strong>
-          Used comparative analysis and A/B-testing-style comparisons between early and later cohorts to confirm the apparent decline in positive sentiment wasn't just noise, rather than eyeballing the trend line alone.
-        </li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>Skills</h2>
+      <p><strong>Python:</strong> Pandas to clean and aggregate the data, <code>langdetect</code> to detect language, VADER to label sentiment, NumPy to run the permutation test</p>
+      <p><strong>Visualization:</strong> Plotly, Seaborn, Matplotlib to show sentiment over time</p>
+      <p><strong>Statistics:</strong> Permutation A/B test (5,000 simulations, p &lt; 0.05 cutoff) on likes, with IQR outlier removal</p>
+      <p><strong>SQL:</strong> Querying the tweet CSV</p>
+    </div>
+
+    <div class="section">
+      <h2>Results &amp; Business Recommendation</h2>
+      <p>Tracking tweets about ChatGPT gives a clear read on early public opinion. Attention grew fast, with the daily tweet rate rising about 78% from December to February. Positive tweets outnumbered negative ones about 3.4 to 1, and that mix moved less than 2 points a month even as volume grew. The one visible dip came from January to February 2023, when positive sentiment fell from 57.1% to 55.2%, and negative rose from 15.9% to 16.9%. This timing lines up with the "woke ChatGPT" bias debate, showing a possible correlation. Negative and positive tweets also got similar likes (p = 0.16), so negativity wasn't amplified.</p>
+
+      <div class="demo-card">
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Monthly sentiment mix — % of tweets positive, neutral, and negative each month.</p>
+        <canvas id="sentimentChart" height="240"></canvas>
+      </div>
+
+      <div class="demo-card" style="margin-top:18px;">
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Daily tweet volume, Nov 30, 2022 – Feb 24, 2023, colored by month. The Feb 7–8 spike (6,577 / 5,354 tweets) is the largest in the window.</p>
+        <canvas id="volumeChart" height="240"></canvas>
+      </div>
+
+      <p style="margin-top:20px;">Because opinion stayed strongly positive, and the only dip coincided with a public controversy, I read the launch as broadly well received, with sentiment sensitive to news and debate. I offer the following insights:</p>
+      <ol class="steps">
+        <li>ChatGPT's early reception was strong enough to support growth, since enthusiasm clearly outweighed concern.</li>
+        <li>Shifts in sentiment may reflect a wider public debate and not opinions of the product itself.</li>
+        <li>The dip in positive sentiment was small, so it is not strong enough to show that opinion turned against ChatGPT.</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>Next Steps</h2>
+      <ol class="steps">
+        <li>Validate sentiment against a hand-labeled sample, or compare with a model built for social media text.</li>
+        <li>Extend the time range to see whether the trend holds beyond the launch period.</li>
+        <li>Compare with non-ChatGPT tweets to establish a baseline for general Twitter sentiment.</li>
+        <li>Analyze sentiment daily around key events to test the link more closely.</li>
       </ol>
     </div>
 
@@ -102,32 +144,81 @@ function chartColors() {
   return {
     text: dark ? '#e7e7ea' : '#222222',
     grid: dark ? '#2a2b31' : '#e5e5e5',
-    accent: dark ? '#6fa8ff' : '#2a7ae2'
+    positive: dark ? '#4fd1c5' : '#00a896',
+    neutral: dark ? '#9a9aa2' : '#8a8a92',
+    negative: dark ? '#f2a65a' : '#e07b39',
+    dec: dark ? '#6fa8ff' : '#2a7ae2',
+    jan: dark ? '#f2a65a' : '#e07b39',
+    feb: dark ? '#4fd1c5' : '#00a896'
   };
 }
 var c = chartColors();
 Chart.defaults.color = c.text;
 Chart.defaults.borderColor = c.grid;
 
-var cohorts = ['Wk 1','Wk 2','Wk 3','Wk 4','Wk 5','Wk 6','Wk 7','Wk 8','Wk 9','Wk 10'];
-var sentiment = [0.42, 0.39, 0.36, 0.33, 0.30, 0.27, 0.24, 0.22, 0.19, 0.17];
-
+// Real monthly sentiment %, computed from exact tweet counts in the notebook
+// (Dec: 34071/15852/9953 of 59876; Jan: 45321/21384/12618 of 79323; Feb: 45675/23102/13952 of 82729)
 new Chart(document.getElementById('sentimentChart'), {
   type: 'line',
   data: {
-    labels: cohorts,
+    labels: ['Dec 2022', 'Jan 2023', 'Feb 2023'],
+    datasets: [
+      { label: 'Positive', data: [56.90, 57.13, 55.21], borderColor: c.positive, backgroundColor: c.positive, tension: 0.2 },
+      { label: 'Neutral',  data: [26.47, 26.96, 27.92], borderColor: c.neutral,  backgroundColor: c.neutral,  tension: 0.2 },
+      { label: 'Negative', data: [16.62, 15.91, 16.86], borderColor: c.negative, backgroundColor: c.negative, tension: 0.2 }
+    ]
+  },
+  options: {
+    scales: { y: { title: { display: true, text: '% of tweets that month' }, min: 0, max: 65 } },
+    plugins: { legend: { position: 'bottom' } }
+  }
+});
+
+// Real daily tweet counts, Nov 30, 2022 - Feb 24, 2023
+var daily = [
+["2022-11-30",64],["2022-12-01",1156],["2022-12-02",2676],["2022-12-03",2216],["2022-12-04",2927],
+["2022-12-05",4214],["2022-12-06",4657],["2022-12-07",3477],["2022-12-08",3428],["2022-12-09",3333],
+["2022-12-10",2380],["2022-12-11",2019],["2022-12-12",2095],["2022-12-13",2026],["2022-12-14",1963],
+["2022-12-15",1824],["2022-12-16",1834],["2022-12-17",1240],["2022-12-18",1041],["2022-12-19",1329],
+["2022-12-20",1335],["2022-12-21",1494],["2022-12-22",1394],["2022-12-23",1302],["2022-12-24",1039],
+["2022-12-25",749],["2022-12-26",1005],["2022-12-27",1253],["2022-12-28",1238],["2022-12-29",1159],
+["2022-12-30",1187],["2022-12-31",886],
+["2023-01-01",824],["2023-01-02",1137],["2023-01-03",1531],["2023-01-04",1912],["2023-01-05",2409],
+["2023-01-06",2317],["2023-01-07",1908],["2023-01-08",1780],["2023-01-09",2258],["2023-01-10",3216],
+["2023-01-11",3344],["2023-01-12",2988],["2023-01-13",2805],["2023-01-14",2040],["2023-01-15",1835],
+["2023-01-16",2609],["2023-01-17",3309],["2023-01-18",3039],["2023-01-19",2931],["2023-01-20",2777],
+["2023-01-21",2285],["2023-01-22",2077],["2023-01-23",3302],["2023-01-24",3437],["2023-01-25",3446],
+["2023-01-26",3270],["2023-01-27",3417],["2023-01-28",2431],["2023-01-29",2152],["2023-01-30",3070],
+["2023-01-31",3467],
+["2023-02-01",3924],["2023-02-02",4097],["2023-02-03",3868],["2023-02-04",2655],["2023-02-05",2463],
+["2023-02-06",4186],["2023-02-07",6577],["2023-02-08",5354],["2023-02-09",4491],["2023-02-10",4140],
+["2023-02-11",2815],["2023-02-12",2606],["2023-02-13",3486],["2023-02-14",3513],["2023-02-15",3465],
+["2023-02-16",3366],["2023-02-17",3705],["2023-02-18",2305],["2023-02-19",2127],["2023-02-20",3191],
+["2023-02-21",3390],["2023-02-22",3085],["2023-02-23",3215],["2023-02-24",705]
+];
+
+function monthColor(dateStr) {
+  if (dateStr.startsWith('2022-11') || dateStr.startsWith('2022-12')) return c.dec;
+  if (dateStr.startsWith('2023-01')) return c.jan;
+  return c.feb;
+}
+
+new Chart(document.getElementById('volumeChart'), {
+  type: 'bar',
+  data: {
+    labels: daily.map(function(d){ return d[0]; }),
     datasets: [{
-      label: 'Avg. sentiment score',
-      data: sentiment,
-      borderColor: c.accent,
-      backgroundColor: c.accent,
-      tension: 0.3,
-      pointRadius: 3
+      label: 'Tweets per day',
+      data: daily.map(function(d){ return d[1]; }),
+      backgroundColor: daily.map(function(d){ return monthColor(d[0]); })
     }]
   },
   options: {
     plugins: { legend: { display: false } },
-    scales: { y: { title: { display: true, text: 'Sentiment score (-1 to 1)' } } }
+    scales: {
+      x: { ticks: { maxTicksLimit: 12 } },
+      y: { title: { display: true, text: 'Tweets per day' } }
+    }
   }
 });
 </script>
