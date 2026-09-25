@@ -76,7 +76,7 @@
       <p>Tracking tweets about ChatGPT gives insight into early public opinion. Attention grew fast, with the daily tweet rate rising about 78% from December to February. Positive tweets outnumbered negative ones about 3.4 to 1, and that ratio remained consistent even as volume grew. The one visible dip came from January to February 2023, when positive sentiment fell from 57.1% to 55.2%, and negative rose from 15.9% to 16.9%. This timing lines up with the rise of AI security bias debate, showing a possible correlation. Negative and positive tweets also got similar likes (p = 0.16), so negativity wasn't amplified.</p>
 
       <div class="demo-card">
-        <p style="margin-top:0; color:var(--muted); font-size:14px;">Sentiment mix by month — drag the slider to see how the split changed.</p>
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Sentiment proportion by month. Drag the slider to see how the split changed.</p>
         <canvas id="sentimentDonut" height="240" style="max-width:320px; margin:0 auto; display:block;"></canvas>
         <div style="max-width:320px; margin:18px auto 0;">
           <input type="range" id="monthSlider" min="0" max="2" step="1" value="0" style="width:100%;">
@@ -88,12 +88,10 @@
       </div>
 
       <div class="demo-card" style="margin-top:18px;">
-        <p style="margin-top:0; color:var(--muted); font-size:14px;">Daily tweet volume with a 7-day rolling average overlaid (dark line) — the average is what actually shows the ~78% rise from December to February; the daily bars alone are too noisy to see it.</p>
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Daily tweet volume with a 7-day rolling average overlaid.</p>
         <canvas id="volumeChart" height="240"></canvas>
-        <div class="metric-row" style="margin-top:18px;">
-          <div class="metric"><div class="value">1,931/day</div><div class="label">Dec average</div></div>
-          <div class="metric"><div class="value">2,559/day</div><div class="label">Jan average</div></div>
-          <div class="metric"><div class="value">3,447/day</div><div class="label">Feb average (+78% vs. Dec)</div></div>
+        <div class="metric-row" style="margin-top:18px; justify-content:center;">
+          <div class="metric" style="text-align:center;"><div class="value">+78%</div><div class="label">Daily tweet rate, Dec &rarr; Feb</div></div>
         </div>
       </div>
 
