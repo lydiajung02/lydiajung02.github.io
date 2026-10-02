@@ -2,10 +2,6 @@
 
 **Live site: [lydiajung02.github.io](https://lydiajung02.github.io/)**
 
-A static portfolio site (plain HTML/CSS/JS, no build step) modeled on the
-[huhsu1.github.io](https://huhsu1.github.io/) layout: a landing page listing projects, a Resume
-button, and per-project pages with a live demo plus the reasoning behind it.
-
 ---
 
 ## About Me
@@ -23,10 +19,6 @@ button, and per-project pages with a live demo plus the reasoning behind it.
 | [Odys eVTOL Revenue Strategy](projects/odys-evtol-revenue.html) | Slide Deck | Modeled airline revenue increase from integrating Odys eVTOL aircraft, using flight/catchment-airport data. |
 | [Sentiment Analysis of ChatGPT Tweets](projects/chatgpt-sentiment-nlp.html) | Independent project | VADER sentiment analysis of ~224K ChatGPT-launch-window tweets, with a permutation A/B test on engagement. |
 
-The original deliverables for the first three (notebook, written report, poster, slide deck) are
-included under `projects/files/`. The full renewable-energy notebook and its own project README
-live in the separate [lydiajung-ds-portfolio](https://github.com/lydiajung02/lydiajung-ds-portfolio)
-repo, which this site links out to.
 
 ## Structure
 
