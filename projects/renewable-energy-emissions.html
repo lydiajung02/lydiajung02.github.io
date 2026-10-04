@@ -23,57 +23,95 @@
 <main class="page-content">
   <div class="wrapper">
     <div class="project-header">
-      <span class="project-meta">UC Berkeley Data 102 · Python · Statsmodels · OLS Regression · Hypothesis Testing</span>
+      <span class="project-meta">Python · Statsmodels · Hypothesis Testing · OLS Regression</span>
       <h1>U.S. Renewable Energy &amp; Emissions Analysis</h1>
-      <p class="project-summary">A statistical analysis of whether state- and subregion-level renewable energy adoption is associated with lower emissions, using EPA eGRID data — 13 hypothesis tests with multiple-comparison correction, then an OLS regression to estimate the size of the effect.</p>
-      <p class="project-meta">Group 4: Alex Nii, Ethan Antony Serbanescu, Lucas Czajka, Lydia Jung</p>
-    </div>
-
-    <div class="metric-row">
-      <div class="metric"><div class="value">R² 0.597</div><div class="label">OLS model fit</div></div>
-      <div class="metric"><div class="value">~22%</div><div class="label">Lower CO₂e in ≥30% renewable states</div></div>
-      <div class="metric"><div class="value">13</div><div class="label">Hypotheses tested</div></div>
-    </div>
-
-    <p>
-      <a class="btn" href="files/renewable-energy-emissions-report.pdf" target="_blank">Read the Written Report (PDF)</a>
-      <a class="btn btn-secondary" href="https://github.com/lydiajung02/lydiajung-ds-portfolio/blob/main/Renewable-Energy-and-Emissions/REaE_code.ipynb" target="_blank">View Notebook on GitHub</a>
-    </p>
-
-    <div class="section">
-      <h2>Live Demo</h2>
-      <div class="demo-card">
-        <p style="margin-top:0; color:var(--muted); font-size:14px;">The actual OLS regression coefficients from the notebook — each energy source's estimated effect on a subregion's total CO₂ emissions, controlling for the others. Hover a bar for its p-value.</p>
-        <canvas id="olsChart" height="260"></canvas>
-        <p style="color:var(--muted); font-size:12.5px; margin: 10px 0 0;">Only Hydro (p = 0.001) and Oil (p = 0.001) were statistically significant at α = 0.05 — the other coefficients (shown lighter) could not be distinguished from zero given the sample of 28 subregions.</p>
-      </div>
     </div>
 
     <div class="section">
-      <h2>How Did I Do This?</h2>
+      <h2>Executive Summary</h2>
+      <p>Using Python, I analyzed one year of EPA eGRID data on U.S. states and 28 grid subregions to test whether more renewable energy goes with lower emissions. I tested 14 hypotheses with two multiple-testing corrections, then fit an OLS regression of subregion CO₂ on fuel mix. I conclude that:</p>
+      <ol class="steps">
+        <li>States with 30% or more renewable energy have about 22% lower CO₂ emissions than states below that threshold. Top-quartile renewable states also emit about 19% less methane and about 14% less annual NOₓ. All three held up after both corrections.</li>
+        <li>Hydro is the only renewable source with a significant link to lower subregion CO₂ (coefficient −1,125, p = 0.001), while oil goes with higher CO₂ (+913, p = 0.001). The effects of solar, biomass and geothermal were inconclusive.</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>Significance of This Project</h2>
+      <p>Whether renewables actually cut emissions shapes how states set targets such as Renewable Portfolio Standards, and where they invest. Using EPA data, do states and regions with more renewable energy emit less, which sources carry the effect, and how confident can we be that the relationship is causal?</p>
+    </div>
+
+    <div class="section">
+      <h2>Methodology</h2>
       <ol class="steps">
         <li>
-          <strong>1. Data &amp; cleaning</strong>
-          Pulled U.S. EPA eGRID data at the state and subregion level: generation resource mix (% from Oil, Gas, Nuclear, Hydro, Biomass, Wind, Solar, Geothermal), nameplate capacity, net generation, and emissions (CO₂, CH₄, NOₓ, SO₂). Merged state- and subregion-level tables and coerced mixed-type columns to numeric before anything else.
+          <strong>Explore the eGRID data</strong>
+          Cleaned the state and subregion resource-mix and emissions tables, then plotted renewable share against CO₂, capacity against generation, renewable groups by region, and subregions ranked by CO₂.
         </li>
         <li>
-          <strong>2. Exploratory analysis</strong>
-          Scatterplots of renewable share vs. total CO₂ (by state and by subregion) both showed a visible negative trend — not perfectly linear, which is exactly why the next step needed formal testing rather than eyeballing the scatter. Bar charts by region also showed the West skewing high-renewable and the South skewing low-renewable, hinting emissions differences might partly track region rather than renewables alone.
+          <strong>Test 14 hypotheses</strong>
+          Ran two-sample t-tests (unequal variance), for example 30% or more renewable vs. below, gas-heavy states, West vs. South, and top vs. bottom quartile for each pollutant. The power for the first hypothesis was 0.88.
         </li>
         <li>
-          <strong>3. Multiple hypothesis testing</strong>
-          Tested 13 hypotheses (e.g. "states with ≥30% renewables have lower CO₂ than states below 30%", tested separately per pollutant: CO₂, CH₄, N₂O, CO₂e, annual NOₓ, ozone-season NOₓ, SO₂). Testing that many hypotheses at once inflates the false-positive rate, so I applied two corrections — Bonferroni and Benjamini-Hochberg — rather than trusting the raw p-values from each individual t-test.
+          <strong>Correct for multiple testing</strong>
+          Applied Bonferroni and Benjamini-Hochberg corrections. I preferred Benjamini-Hochberg because the goal was finding patterns, not making a high-stakes decision. Both methods agreed on all 14 hypotheses.
         </li>
         <li>
-          <strong>4. Causal inference via OLS</strong>
-          Fit a multiple regression of total CO₂ on Hydro, Biomass, Solar, Geothermal, and Oil share, plus Net Generation and Nameplate Capacity as controls (28 subregions, R² = 0.597). Hydro came back with a coefficient of -1,125 (p = 0.001) and Oil at +913 (p = 0.001) — the only two statistically distinguishable from zero. Biomass, Solar, and Geothermal all had wide confidence intervals crossing zero, meaning this sample couldn't establish their individual effect with confidence, even though the overall renewable-vs-emissions trend was visible in the raw scatter.
-        </li>
-        <li>
-          <strong>5. Results &amp; policy framing</strong>
-          States with ≥30% renewables showed ~22% lower CO₂-equivalent emissions, with hydro specifically standing out as the renewable source with a statistically defensible emissions-reducing effect. Wrote up policy recommendations (raise Renewable Portfolio Standards to 35%+ by 2030, prioritize hydro investment where feasible) while being explicit about the limitations: one-year snapshot data, state/subregion-level aggregation (no facility or time-series granularity), and the real possibility of omitted-variable bias from factors like energy policy or demand we didn't observe.
+          <strong>Estimate effects with OLS</strong>
+          Regressed total CO₂ on hydro, biomass, solar, geothermal and oil shares, controlling for net generation and nameplate capacity. A DAG helped me reason about unobserved confounders such as policy, demand and fuel prices.
         </li>
       </ol>
     </div>
+
+    <div class="section">
+      <h2>Skills</h2>
+      <p><strong>Python:</strong> Pandas and NumPy to clean and merge the eGRID tables, Statsmodels to fit the OLS regression</p>
+      <p><strong>Visualization:</strong> Matplotlib and Seaborn for scatter and bar plots</p>
+      <p><strong>Statistics:</strong> Two-sample t-tests with a power calculation, Bonferroni and Benjamini-Hochberg corrections, OLS regression, confounder reasoning with a DAG</p>
+    </div>
+
+    <div class="section">
+      <h2>Results &amp; Business Recommendation</h2>
+      <p>Only 3 of 14 hypotheses held up after correction. States with 30% or more renewables have lower CO₂ emissions (raw p = 0.002, Benjamini-Hochberg p = 0.009), and top-quartile renewable states have lower methane and annual NOₓ. The other 11, including SO₂, ozone-season NOₓ, gas-heavy states and West vs. South, were not significant after correction. In the OLS regression (R² = 0.597, 28 subregions), hydro was the only renewable with a significant negative coefficient (−1,125, p = 0.001), and oil was associated with higher emissions (+913, p = 0.001). Solar, biomass and geothermal had negative signs but standard errors too large to draw a conclusion.</p>
+
+      <div class="demo-card">
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Renewable share vs. total CO₂ emissions by state (lb/MWh).</p>
+        <img src="images/renewable-scatter-by-state.png" alt="Scatter plot of renewable percentage vs. total CO2 emissions by state" style="max-width:100%; height:auto; display:block; margin:0 auto; background:#fff; border-radius:6px;">
+      </div>
+
+      <div class="demo-card" style="margin-top:18px;">
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Hypothesis test results: raw, Bonferroni and Benjamini-Hochberg p-values.</p>
+        <img src="images/renewable-hypothesis-results.png" alt="Table of raw, Bonferroni and Benjamini-Hochberg p-values for 14 hypotheses" style="max-width:100%; height:auto; display:block; margin:0 auto; background:#fff; border-radius:6px;">
+      </div>
+
+      <div class="demo-card" style="margin-top:18px;">
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">OLS regression output: total CO₂ on fuel-mix shares (N = 28).</p>
+        <img src="images/renewable-ols-output.png" alt="OLS regression summary for total CO2" style="max-width:100%; height:auto; display:block; margin:0 auto; background:#fff; border-radius:6px;">
+      </div>
+
+      <p style="margin-top:20px;">Because the renewable-heavy pattern held after correction, but the regression rests on only 28 subregions, I read this as a strong association rather than proof of causation. I offer the following insights:</p>
+      <ol class="steps">
+        <li>Renewable-heavy states emit less CO₂, which supports raising renewable targets. The clearest difference appears at the 30% mark.</li>
+        <li>Hydro carries the clearest effect. The other renewables are inconclusive in this sample, which doesn't mean they don't work.</li>
+        <li>Policy, demand and fuel prices weren't observed, so confidence in a causal reading is low.</li>
+      </ol>
+      <p>States should raise their Renewable Portfolio Standards to at least 35% by 2030, paired with incentives for energy storage and grid interconnection. Policymakers should also expand hydropower where environmentally feasible, with rural and Indigenous communities included in planning.</p>
+    </div>
+
+    <div class="section">
+      <h2>Next Steps</h2>
+      <ol class="steps">
+        <li>Build a five-year hourly panel by balancing authority (about 44 million observations) to test whether the annual trend holds at the dispatch level.</li>
+        <li>Add policy, demand and fuel-price controls, and move to county or utility granularity.</li>
+        <li>Test interactions between energy sources, treat renewable share as continuous, and check how sensitive the results are to the 30% and quartile cutoffs.</li>
+        <li>Ask grid operators how often renewables are curtailed or backed up by gas during demand peaks.</li>
+      </ol>
+    </div>
+
+    <p style="margin-top:44px;">
+      <a class="btn" href="files/renewable-energy-emissions-report.pdf" target="_blank">Read the Written Report (PDF)</a>
+      <a class="btn btn-secondary" href="https://github.com/lydiajung02/lydiajung-ds-portfolio/blob/main/Renewable-Energy-and-Emissions/REaE_code.ipynb" target="_blank">View Notebook on GitHub</a>
+    </p>
 
     <a class="back-link" href="../index.html">&larr; Back to all projects</a>
   </div>
@@ -96,63 +134,6 @@
     </div>
   </div>
 </footer>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script>
-function chartColors() {
-  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  return {
-    text: dark ? '#e7e7ea' : '#222222',
-    grid: dark ? '#2a2b31' : '#e5e5e5',
-    accent: dark ? '#6fa8ff' : '#2a7ae2',
-    accent2: dark ? '#f2a65a' : '#e07b39',
-    faint: dark ? '#4a4b52' : '#c7c7c7'
-  };
-}
-var c = chartColors();
-Chart.defaults.color = c.text;
-Chart.defaults.borderColor = c.grid;
-
-// Real OLS output from Renewable-Energy-and-Emissions/REaE_code.ipynb
-var rows = [
-  { label: 'Hydro',                    coef: -1124.70, p: 0.001, sig: true  },
-  { label: 'Oil',                      coef:   912.53, p: 0.001, sig: true  },
-  { label: 'Solar',                    coef: -1788.92, p: 0.261, sig: false },
-  { label: 'Geo-thermal',              coef: -3260.68, p: 0.362, sig: false },
-  { label: 'Biomass',                  coef: -1688.69, p: 0.642, sig: false },
-  { label: 'Net Generation (MWh)',     coef:      0.00, p: 0.373, sig: false, note: '(coef ~ -1.8e-6, scaled off-chart)' },
-  { label: 'Nameplate Capacity (MW)',  coef:      0.01, p: 0.381, sig: false, note: '(coef ~ 0.006, scaled off-chart)' }
-];
-// Net Generation / Nameplate Capacity coefficients are near-zero on this scale (different units) — show only the 5 energy-share terms for readability
-var chartRows = rows.slice(0, 5);
-
-new Chart(document.getElementById('olsChart'), {
-  type: 'bar',
-  data: {
-    labels: chartRows.map(function(r){ return r.label; }),
-    datasets: [{
-      label: 'OLS coefficient (effect on total CO2)',
-      data: chartRows.map(function(r){ return r.coef; }),
-      backgroundColor: chartRows.map(function(r){ return r.sig ? (r.coef < 0 ? c.accent : c.accent2) : c.faint; })
-    }]
-  },
-  options: {
-    indexAxis: 'y',
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: function(ctx) {
-            var r = chartRows[ctx.dataIndex];
-            return 'coef = ' + r.coef.toFixed(1) + ', p = ' + r.p.toFixed(3) + (r.sig ? ' (significant)' : ' (not significant)');
-          }
-        }
-      }
-    },
-    scales: { x: { title: { display: true, text: 'Effect on total CO2 (lower = fewer emissions)' } } }
-  }
-});
-</script>
 
 </body>
 </html>
