@@ -29,87 +29,87 @@
 
     <div class="section">
       <h2>Executive Summary</h2>
-      <p>Using Python, I analyzed one year of EPA eGRID data on U.S. states and 28 grid subregions to test whether more renewable energy goes with lower emissions. I tested 14 hypotheses with two multiple-testing corrections, then fit an OLS regression of subregion CO₂ on fuel mix. I conclude that:</p>
+      <p>Using Python, I analyzed EPA data on U.S. states and grid regions to see whether more renewable energy means lower emissions. I tested 14 specific claims, then built a regression model. I conclude that:</p>
       <ol class="steps">
-        <li>States with 30% or more renewable energy have about 22% lower CO₂ emissions than states below that threshold. Top-quartile renewable states also emit about 19% less methane and about 14% less annual NOₓ. All three held up after both corrections.</li>
-        <li>Hydro is the only renewable source with a significant link to lower subregion CO₂ (coefficient −1,125, p = 0.001), while oil goes with higher CO₂ (+913, p = 0.001). The effects of solar, biomass and geothermal were inconclusive.</li>
+        <li>States that get 30% or more of their power from renewables have about 22% lower CO₂ emissions. The most renewable-heavy states also emit less methane and nitrogen oxides.</li>
+        <li>Among renewables, only hydropower clearly lowers CO₂, while oil raises it. The results for solar, biomass and geothermal were unclear.</li>
       </ol>
     </div>
 
     <div class="section">
       <h2>Significance of This Project</h2>
-      <p>Whether renewables actually cut emissions shapes how states set targets such as Renewable Portfolio Standards, and where they invest. Using EPA data, do states and regions with more renewable energy emit less, which sources carry the effect, and how confident can we be that the relationship is causal?</p>
+      <p>Whether renewables really cut emissions affects how states set energy goals and where they invest. Using EPA data, I asked: do states with more renewable energy emit less, which renewable sources matter most, and can we say renewables are the cause?</p>
     </div>
 
     <div class="section">
       <h2>Methodology</h2>
       <ol class="steps">
         <li>
-          <strong>Explore the eGRID data</strong>
-          Cleaned the state and subregion resource-mix and emissions tables, then plotted renewable share against CO₂, capacity against generation, renewable groups by region, and subregions ranked by CO₂.
+          <strong>Explore the data</strong>
+          Cleaned the EPA data and plotted renewable share against CO₂ emissions to see the overall pattern.
         </li>
         <li>
-          <strong>Test 14 hypotheses</strong>
-          Ran two-sample t-tests (unequal variance), for example 30% or more renewable vs. below, gas-heavy states, West vs. South, and top vs. bottom quartile for each pollutant. The power for the first hypothesis was 0.88.
+          <strong>Test 14 claims</strong>
+          Compared emissions between groups of states, such as high vs. low renewable share, using t-tests.
         </li>
         <li>
-          <strong>Correct for multiple testing</strong>
-          Applied Bonferroni and Benjamini-Hochberg corrections. I preferred Benjamini-Hochberg because the goal was finding patterns, not making a high-stakes decision. Both methods agreed on all 14 hypotheses.
+          <strong>Avoid false positives</strong>
+          When you run many tests, some look significant by chance. I adjusted the results using two standard methods, and both gave the same answers.
         </li>
         <li>
-          <strong>Estimate effects with OLS</strong>
-          Regressed total CO₂ on hydro, biomass, solar, geothermal and oil shares, controlling for net generation and nameplate capacity. A DAG helped me reason about unobserved confounders such as policy, demand and fuel prices.
+          <strong>Measure each energy source</strong>
+          Used regression to estimate how much each energy source, such as hydro, solar or oil, changes CO₂, while accounting for how much power each region produces.
         </li>
       </ol>
     </div>
 
     <div class="section">
       <h2>Skills</h2>
-      <p><strong>Python:</strong> Pandas and NumPy to clean and merge the eGRID tables, Statsmodels to fit the OLS regression</p>
-      <p><strong>Visualization:</strong> Matplotlib and Seaborn for scatter and bar plots</p>
-      <p><strong>Statistics:</strong> Two-sample t-tests with a power calculation, Bonferroni and Benjamini-Hochberg corrections, OLS regression, confounder reasoning with a DAG</p>
+      <p><strong>Python:</strong> Pandas and NumPy to clean the data, Statsmodels for regression</p>
+      <p><strong>Visualization:</strong> Matplotlib and Seaborn for charts</p>
+      <p><strong>Statistics:</strong> t-tests, false-positive adjustments, regression</p>
     </div>
 
     <div class="section">
       <h2>Results &amp; Business Recommendation</h2>
-      <p>Only 3 of 14 hypotheses held up after correction. States with 30% or more renewables have lower CO₂ emissions (raw p = 0.002, Benjamini-Hochberg p = 0.009), and top-quartile renewable states have lower methane and annual NOₓ. The other 11, including SO₂, ozone-season NOₓ, gas-heavy states and West vs. South, were not significant after correction. In the OLS regression (R² = 0.597, 28 subregions), hydro was the only renewable with a significant negative coefficient (−1,125, p = 0.001), and oil was associated with higher emissions (+913, p = 0.001). Solar, biomass and geothermal had negative signs but standard errors too large to draw a conclusion.</p>
+      <p>Only 3 of the 14 claims held up after adjusting for false positives. States with 30% or more renewables have lower CO₂ emissions, and the most renewable-heavy states have lower methane and nitrogen oxide emissions. The other 11 were not significant. The regression showed that hydropower lowers CO₂ and oil raises it. Solar, biomass and geothermal pointed the same way as hydro, but the results were too uncertain to conclude anything.</p>
 
       <div class="demo-card">
-        <p style="margin-top:0; color:var(--muted); font-size:14px;">Renewable share vs. total CO₂ emissions by state (lb/MWh).</p>
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Renewable share vs. CO₂ emissions by state.</p>
         <img src="images/renewable-scatter-by-state.png" alt="Scatter plot of renewable percentage vs. total CO2 emissions by state" style="max-width:100%; height:auto; display:block; margin:0 auto; background:#fff; border-radius:6px;">
       </div>
 
       <div class="demo-card" style="margin-top:18px;">
-        <p style="margin-top:0; color:var(--muted); font-size:14px;">Hypothesis test results: raw, Bonferroni and Benjamini-Hochberg p-values.</p>
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Results of the 14 tests, before and after adjusting for false positives.</p>
         <img src="images/renewable-hypothesis-results.png" alt="Table of raw, Bonferroni and Benjamini-Hochberg p-values for 14 hypotheses" style="max-width:100%; height:auto; display:block; margin:0 auto; background:#fff; border-radius:6px;">
       </div>
 
       <div class="demo-card" style="margin-top:18px;">
-        <p style="margin-top:0; color:var(--muted); font-size:14px;">OLS regression output: total CO₂ on fuel-mix shares (N = 28).</p>
+        <p style="margin-top:0; color:var(--muted); font-size:14px;">Regression results: how each energy source relates to CO₂.</p>
         <img src="images/renewable-ols-output.png" alt="OLS regression summary for total CO2" style="max-width:100%; height:auto; display:block; margin:0 auto; background:#fff; border-radius:6px;">
       </div>
 
-      <p style="margin-top:20px;">Because the renewable-heavy pattern held after correction, but the regression rests on only 28 subregions, I read this as a strong association rather than proof of causation. I offer the following insights:</p>
+      <p style="margin-top:20px;">The pattern held up after adjusting, but the regression used only 28 regions, so I read this as a strong link, not proof of cause. I offer the following insights:</p>
       <ol class="steps">
-        <li>Renewable-heavy states emit less CO₂, which supports raising renewable targets. The clearest difference appears at the 30% mark.</li>
-        <li>Hydro carries the clearest effect. The other renewables are inconclusive in this sample, which doesn't mean they don't work.</li>
-        <li>Policy, demand and fuel prices weren't observed, so confidence in a causal reading is low.</li>
+        <li>States with 30% or more renewables emit less CO₂, which supports setting higher renewable targets.</li>
+        <li>Hydropower shows the clearest effect. The other renewables are unclear in this data, which doesn't mean they don't work.</li>
+        <li>I couldn't measure things like state policy, demand and fuel prices, so I can't be sure renewables are the cause.</li>
       </ol>
-      <p>States should raise their Renewable Portfolio Standards to at least 35% by 2030, paired with incentives for energy storage and grid interconnection. Policymakers should also expand hydropower where environmentally feasible, with rural and Indigenous communities included in planning.</p>
+      <p>States should raise their renewable energy requirements to at least 35% by 2030 and support energy storage and grid upgrades. Policymakers should also expand hydropower where it is environmentally feasible, with rural and Indigenous communities included in planning.</p>
     </div>
 
     <div class="section">
       <h2>Next Steps</h2>
       <ol class="steps">
-        <li>Build a five-year hourly panel by balancing authority (about 44 million observations) to test whether the annual trend holds at the dispatch level.</li>
-        <li>Add policy, demand and fuel-price controls, and move to county or utility granularity.</li>
-        <li>Test interactions between energy sources, treat renewable share as continuous, and check how sensitive the results are to the 30% and quartile cutoffs.</li>
-        <li>Ask grid operators how often renewables are curtailed or backed up by gas during demand peaks.</li>
+        <li>Use five years of hourly data to check whether the yearly pattern holds day to day.</li>
+        <li>Add policy, demand and fuel price data, and look at counties or utilities instead of whole states.</li>
+        <li>Test how combinations of energy sources affect emissions, and whether the results change if the 30% cutoff changes.</li>
+        <li>Ask grid operators how often renewable power is cut back or backed up by gas during peak demand.</li>
       </ol>
     </div>
 
     <p style="margin-top:44px;">
-      <a class="btn" href="files/renewable-energy-emissions-report.pdf" target="_blank">Read the Written Report (PDF)</a>
+      <a class="btn" href="files/renewable-energy-emissions-report.pdf" target="_blank">Read the Written Report</a>
       <a class="btn btn-secondary" href="https://github.com/lydiajung02/lydiajung-ds-portfolio/blob/main/Renewable-Energy-and-Emissions/REaE_code.ipynb" target="_blank">View Notebook on GitHub</a>
     </p>
 
