@@ -6,6 +6,43 @@
 <title>eVTOL Revenue Impact Analysis — Lydia Jung</title>
 <link rel="stylesheet" href="../assets/css/style.css">
 <script src="../assets/js/theme.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<style>
+#hubMap { height: 430px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); }
+.demo-note { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+.demo-foot { color: var(--muted); font-size: 12.5px; margin: 12px 0 0; }
+.hub-detail { margin-top: 14px; font-size: 14.5px; }
+.hub-detail h3 { margin: 0 0 6px; font-size: 17px; }
+.hub-detail .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 10px 0; }
+.hub-detail .kv div { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; }
+.hub-detail .kv b { display: block; font-size: 18px; }
+.hub-detail .kv span { color: var(--muted); font-size: 12.5px; }
+.hub-detail .feeds { color: var(--muted); font-size: 13px; }
+.calc-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px; }
+.calc-controls label { font-size: 14px; display: block; }
+.calc-controls input[type=range] { width: 100%; margin-top: 6px; accent-color: var(--accent); }
+.calc-headline { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.calc-headline .metric { margin: 0; }
+.table-scroll { overflow-x: auto; }
+.calc-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px; }
+.calc-table th { text-align: left; font-weight: 600; color: var(--muted); font-size: 12.5px; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.calc-table td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.calc-table tbody tr { cursor: pointer; }
+.calc-table tbody tr:hover { background: var(--accent-soft); }
+.calc-table tbody tr.active { background: var(--accent-soft); }
+.rev-bar { display: flex; height: 10px; margin-top: 5px; border-radius: 3px; overflow: hidden; background: transparent; }
+.rev-bar i { display: block; height: 100%; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; }
+.sw-p2p, .rev-bar .b-p2p { background: #e07b39; }
+.sw-ce, .rev-bar .b-ce { background: #2a7ae2; }
+.calc-legend { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+.reset-btn { margin-left: auto; font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.reset-btn:hover { background: var(--accent-soft); }
+.leaflet-container { font-family: inherit; }
+.hub-label { background: transparent; border: none; box-shadow: none; font-weight: 700; font-size: 11px; color: #fff; padding: 0; }
+.hub-label:before { display: none; }
+@media (max-width: 600px) { #hubMap { height: 340px; } .calc-headline { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
 
@@ -39,16 +76,41 @@
 
     <div class="section">
       <h2>Live Demo</h2>
+
       <div class="demo-card">
-        <p style="margin-top:0; color:var(--muted); font-size:14px;">The headline result from the deck: projected annual revenue increase by airline if Odys eVTOLs were integrated at their strongest catchment hubs.</p>
-        <canvas id="revenueChart" height="220"></canvas>
+        <p class="demo-note">Hub network map. Click a hub to see the airports that feed it and its numbers. Circle size shows how many flyers each hub could serve.</p>
+        <div id="hubMap" role="application" aria-label="Map of hub airports and their catchment airports"></div>
+        <div id="hubDetail" class="hub-detail"></div>
       </div>
-      <div class="demo-card" style="padding:0; overflow:hidden; margin-top:18px;">
-        <iframe src="files/odys-evtol-revenue-deck.pdf" title="Odys eVTOL revenue strategy slide deck" style="width:100%; height:600px; border:none; display:block;"></iframe>
+
+      <div class="demo-card" style="margin-top:18px;">
+        <p class="demo-note">Revenue calculator. The starting values are the deck's assumptions. Change them to see how revenue and the revenue lift move.</p>
+        <div class="calc-controls">
+          <label>Fare per local flyer (P2P): <strong id="pfVal"></strong>
+            <input type="range" id="pFare" min="50" max="300" step="1" value="117">
+          </label>
+          <label>Fare per feeder flyer (CE): <strong id="cfVal"></strong>
+            <input type="range" id="cFare" min="500" max="3000" step="50" value="1500">
+          </label>
+          <label>Share of flyers who use the service: <strong id="adVal"></strong>
+            <input type="range" id="adopt" min="10" max="100" step="5" value="100">
+          </label>
+        </div>
+        <div class="calc-headline">
+          <div class="metric"><div class="value" id="outDelta"></div><div class="label">Delta revenue lift (DTW &amp; MSP)</div></div>
+          <div class="metric"><div class="value" id="outAmerican"></div><div class="label">American revenue lift (ORD)</div></div>
+        </div>
+        <div class="table-scroll">
+          <table class="calc-table" id="calcTable">
+            <thead><tr><th>Hub</th><th>Airline</th><th>Flyers</th><th>Revenue</th><th>Lift</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="calc-legend"><span><i class="sw sw-p2p"></i>P2P revenue</span><span><i class="sw sw-ce"></i>CE revenue</span><button type="button" class="reset-btn" id="resetCalc">Reset to deck values</button></div>
+        <p class="demo-foot">P2P flyers are drivers living near the hub. CE flyers are people at smaller nearby airports who would be routed through the hub. Lift is revenue divided by the airline's last twelve months of revenue as of 9/30/2022.</p>
       </div>
-      <p style="color:var(--muted); font-size:12.5px; margin-top:10px;">
-        If the deck doesn't render inline (common on mobile), use the "View Full Slide Deck" button above.
-      </p>
+
+      <p class="demo-foot" style="margin-top:14px;">For the full analysis, use the "View Full Slide Deck" button above.</p>
     </div>
 
     <div class="section">
@@ -103,37 +165,152 @@
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-function chartColors() {
-  var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-  return {
-    text: dark ? '#e7e7ea' : '#222222',
-    grid: dark ? '#2a2b31' : '#e5e5e5',
-    accent: dark ? '#6fa8ff' : '#2a7ae2',
-    accent2: dark ? '#f2a65a' : '#e07b39'
+(function () {
+  var XY = {
+    SEA:[47.4502,-122.3088], BOI:[43.5644,-116.2228], GEG:[47.6199,-117.5339], PDX:[45.5898,-122.5951],
+    ORD:[41.9742,-87.9073], DTW:[42.2124,-83.3534], MSP:[44.8848,-93.2223],
+    CLE:[41.4117,-81.8498], CMH:[39.9980,-82.8919], CVG:[39.0488,-84.6678], DSM:[41.5340,-93.6631],
+    GRR:[42.8808,-85.5228], IND:[39.7173,-86.2944], MCI:[39.2976,-94.7139], MDW:[41.7868,-87.7522],
+    SDF:[38.1744,-85.7360], STL:[38.7487,-90.3700], BUF:[42.9405,-78.7322], PIT:[40.4915,-80.2329],
+    ROC:[43.1189,-77.6724], DFW:[32.8998,-97.0403], IAH:[29.9844,-95.3414], AMA:[35.2194,-101.7059],
+    AUS:[30.1945,-97.6699], MAF:[31.9425,-102.2019], MEM:[35.0424,-89.9767], MSY:[29.9934,-90.2580],
+    OKC:[35.3931,-97.6007], SAT:[29.5337,-98.4698], TUL:[36.1984,-95.8881]
   };
-}
-var c = chartColors();
-Chart.defaults.color = c.text;
-Chart.defaults.borderColor = c.grid;
+  var TX = ['AMA','AUS','MAF','MEM','MSY','OKC','SAT','TUL'];
+  var HUBS = [
+    {code:'ORD', name:"Chicago O'Hare", airline:'American', p2p:163508, ce:473555, short:96.2,
+     cat:['CLE','CMH','CVG','DSM','DTW','GRR','IND','MCI','MDW','MSP','SDF','STL']},
+    {code:'DTW', name:'Detroit Metro', airline:'Delta', p2p:96576, ce:506519, short:94.8,
+     cat:['BUF','CLE','CMH','CVG','GRR','MDW','ORD','IND','PIT','ROC','SDF']},
+    {code:'MSP', name:'Minneapolis–St. Paul', airline:'Delta', p2p:50188, ce:235191, short:93.4,
+     cat:['DSM','DTW','MCI','MDW','ORD']},
+    {code:'SEA', name:'Seattle–Tacoma', airline:'Delta', p2p:60902, ce:48679, short:88.7,
+     cat:['BOI','GEG','PDX']},
+    {code:'DFW', name:'Dallas/Fort Worth', airline:'American', p2p:56298, ce:80522, short:98.6, cat:TX},
+    {code:'IAH', name:'Houston Intercontinental', airline:'United', p2p:45086, ce:75863, short:98.6, cat:TX}
+  ];
+  var AIRLINE_REV = {Delta:46.6e9, American:45.2e9, United:40.7e9};
+  var COLORS = {Delta:'#2a7ae2', American:'#e07b39', United:'#2f9e6e'};
+  var byCode = {}; HUBS.forEach(function (h) { byCode[h.code] = h; });
 
-new Chart(document.getElementById('revenueChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Delta (MSP & DTW)', 'American (ORD)'],
-    datasets: [{
-      label: 'Projected annual revenue increase',
-      data: [2.4, 1.6],
-      backgroundColor: [c.accent, c.accent2]
-    }]
-  },
-  options: {
-    indexAxis: 'y',
-    plugins: { legend: { display: false } },
-    scales: { x: { title: { display: true, text: 'Annual revenue increase (%)' }, max: 3 } }
+  var pFare = document.getElementById('pFare'), cFare = document.getElementById('cFare'), adopt = document.getElementById('adopt');
+  function num(n) { return Math.round(n).toLocaleString('en-US'); }
+  function money(n) {
+    if (n >= 1e9) return '$' + (n / 1e9).toFixed(2) + ' B';
+    var m = n / 1e6;
+    return '$' + (m < 10 ? m.toFixed(2) : m < 100 ? m.toFixed(1) : Math.round(m)) + ' M';
   }
-});
+  function pct(x) { return (x < 1 ? x.toFixed(2) : x.toFixed(1)) + '%'; }
+  function calc(h) {
+    var a = adopt.value / 100;
+    var rp = h.p2p * a * pFare.value, rc = h.ce * a * cFare.value;
+    return {flyers: (h.p2p + h.ce) * a, rp: rp, rc: rc, rev: rp + rc, lift: (rp + rc) / AIRLINE_REV[h.airline] * 100};
+  }
+
+  var selected = 'ORD';
+
+  /* ---------- map ---------- */
+  var map = L.map('hubMap', {scrollWheelZoom: false, worldCopyJump: false});
+  var tiles = null;
+  function setTiles() {
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (tiles) map.removeLayer(tiles);
+    tiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_' + (dark ? 'Dark' : 'Light') + '_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri', maxZoom: 9, minZoom: 3
+    }).addTo(map);
+    tiles.bringToBack();
+  }
+  setTiles();
+  new MutationObserver(setTiles).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']});
+  var bounds = L.latLngBounds(Object.keys(XY).map(function (k) { return XY[k]; }));
+  map.fitBounds(bounds, {padding: [20, 20]});
+
+  var lineLayer = L.layerGroup().addTo(map);
+  var hubMarkers = {};
+  var maxFlyers = 637063;
+  HUBS.forEach(function (h) {
+    var total = h.p2p + h.ce;
+    var mk = L.circleMarker(XY[h.code], {
+      radius: 11 + Math.sqrt(total) / 70, color: '#ffffff', weight: 2,
+      fillColor: COLORS[h.airline], fillOpacity: 0.85
+    }).addTo(map);
+    mk.bindTooltip(h.code, {permanent: true, direction: 'center', className: 'hub-label'});
+    mk.on('click', function () { select(h.code); });
+    hubMarkers[h.code] = mk;
+  });
+
+  function drawLines() {
+    lineLayer.clearLayers();
+    var h = byCode[selected];
+    h.cat.forEach(function (c) {
+      L.polyline([XY[c], XY[h.code]], {color: COLORS[h.airline], weight: 1.5, opacity: 0.55, dashArray: '4 4'}).addTo(lineLayer);
+      if (!byCode[c]) {
+        L.circleMarker(XY[c], {radius: 5, color: '#ffffff', weight: 1.5, fillColor: '#6b6b6b', fillOpacity: 0.95})
+          .bindTooltip(c, {direction: 'top'}).addTo(lineLayer);
+      }
+    });
+    HUBS.forEach(function (x) {
+      hubMarkers[x.code].setStyle({weight: x.code === selected ? 4 : 2, color: x.code === selected ? '#111111' : '#ffffff'});
+      if (x.code === selected) hubMarkers[x.code].bringToFront();
+    });
+  }
+
+  /* ---------- detail card ---------- */
+  function renderDetail() {
+    var h = byCode[selected], r = calc(h);
+    document.getElementById('hubDetail').innerHTML =
+      '<h3>' + h.code + ' — ' + h.name + ' (' + h.airline + ')</h3>' +
+      '<div class="kv">' +
+        '<div><b>' + num(h.p2p * adopt.value / 100) + '</b><span>P2P flyers (local drivers)</span></div>' +
+        '<div><b>' + num(h.ce * adopt.value / 100) + '</b><span>CE flyers (from ' + h.cat.length + ' feeder airports)</span></div>' +
+        '<div><b>' + money(r.rev) + '</b><span>Revenue at current settings</span></div>' +
+        '<div><b>' + pct(r.lift) + '</b><span>Lift on ' + h.airline + ' revenue</span></div>' +
+        '<div><b>' + h.short + '%</b><span>Short-haul share of CE flyers</span></div>' +
+      '</div>' +
+      '<div class="feeds">Feeder airports: ' + h.cat.join(', ') + '</div>';
+  }
+
+  /* ---------- table ---------- */
+  var tbody = document.querySelector('#calcTable tbody');
+  function renderTable() {
+    var rows = HUBS.map(function (h) { return {h: h, r: calc(h)}; });
+    var maxRev = Math.max.apply(null, rows.map(function (x) { return x.r.rev; }));
+    tbody.innerHTML = '';
+    rows.forEach(function (x) {
+      var tr = document.createElement('tr');
+      if (x.h.code === selected) tr.className = 'active';
+      var wP = x.r.rp / maxRev * 100, wC = x.r.rc / maxRev * 100;
+      tr.innerHTML =
+        '<td><strong>' + x.h.code + '</strong></td><td>' + x.h.airline + '</td><td>' + num(x.r.flyers) + '</td>' +
+        '<td style="min-width:150px;">' + money(x.r.rev) +
+          '<div class="rev-bar"><i class="b-p2p" style="width:' + wP + '%"></i><i class="b-ce" style="width:' + wC + '%"></i></div></td>' +
+        '<td>' + pct(x.r.lift) + '</td>';
+      tr.addEventListener('click', function () { select(x.h.code); });
+      tbody.appendChild(tr);
+    });
+    var d = (calc(byCode.DTW).rev + calc(byCode.MSP).rev) / AIRLINE_REV.Delta * 100;
+    document.getElementById('outDelta').textContent = '+' + pct(d);
+    document.getElementById('outAmerican').textContent = '+' + pct(calc(byCode.ORD).lift);
+  }
+
+  function renderControls() {
+    document.getElementById('pfVal').textContent = '$' + pFare.value;
+    document.getElementById('cfVal').textContent = '$' + Number(cFare.value).toLocaleString('en-US');
+    document.getElementById('adVal').textContent = adopt.value + '%';
+  }
+  function update() { renderControls(); renderTable(); renderDetail(); }
+  function select(code) { selected = code; drawLines(); renderTable(); renderDetail(); }
+
+  [pFare, cFare, adopt].forEach(function (el) { el.addEventListener('input', update); });
+  document.getElementById('resetCalc').addEventListener('click', function () {
+    pFare.value = 117; cFare.value = 1500; adopt.value = 100; update();
+  });
+
+  drawLines(); update();
+  setTimeout(function () { map.invalidateSize(); map.fitBounds(bounds, {padding: [20, 20]}); }, 200);
+})();
 </script>
 
 </body>
