@@ -16,7 +16,7 @@
 |--------|------|---------|
 | [U.S. Renewable Energy & Emissions Analysis](projects/renewable-energy-emissions.html) | Notebook, Report | UC Berkeley Data 102 final project — hypothesis testing and OLS regression on EPA eGRID data. |
 | [LWVO Member Demographics Analysis](projects/lwvo-demographics-analysis.html) | Poster | DataGood @ Berkeley consulting project — survey + choropleth analysis for the League of Women Voters of Oakland. |
-| [Odys eVTOL Revenue Strategy](projects/odys-evtol-revenue.html) | Slide Deck | Modeled airline revenue increase from integrating Odys eVTOL aircraft, using flight/catchment-airport data. |
+| [eVTOL Revenue Impact Analysis](projects/odys-evtol-revenue.html) | Slide Deck | Modeled airline revenue increase from integrating Odys eVTOL aircraft, using flight/catchment-airport data. |
 | [Sentiment Analysis of ChatGPT Tweets](projects/chatgpt-sentiment-nlp.html) | Independent project | VADER sentiment analysis of ~224K ChatGPT-launch-window tweets, with a permutation A/B test on engagement. |
 
 
