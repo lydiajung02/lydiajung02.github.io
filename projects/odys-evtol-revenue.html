@@ -62,20 +62,54 @@
     <div class="project-header">
       <span class="project-meta">Python · Geospatial</span>
       <h1>eVTOL Revenue Impact Analysis</h1>
-      <p class="project-summary">How much could Delta and American Airlines grow annual revenue by adding Odys eVTOL aircraft at their hub airports?</p>
     </div>
-
-    <div class="metric-row">
-      <div class="metric"><div class="value">+2.4%</div><div class="label">Delta revenue (MSP &amp; DTW)</div></div>
-      <div class="metric"><div class="value">+1.6%</div><div class="label">American revenue (ORD)</div></div>
-    </div>
-
-    <p>
-      <a class="btn" href="files/odys-evtol-revenue-deck.pdf" target="_blank">View Full Slide Deck (PDF)</a>
-    </p>
 
     <div class="section">
-      <h2>Live Demo</h2>
+      <h2>Executive Summary</h2>
+      <p>Using Python, I analyzed travel and flight data around six U.S. hub airports to estimate how much yearly revenue airlines could add by flying Odys eVTOL aircraft. After finding that the Midwest hubs have far more feeder airports than the rest, I conclude that:</p>
+      <ol class="steps">
+        <li>The Midwest is the best place to deploy first. Delta could grow annual revenue by 2.4% at MSP and DTW, and American by 1.6% at ORD.</li>
+        <li>Nearly all of that revenue, about 97%, comes from bringing in flyers from smaller nearby airports, not from drivers who live near the hub.</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>Significance of This Project</h2>
+      <p>Odys has a limited number of aircraft, so where it deploys first decides how much it earns and how attractive it is to airlines. Using flight and travel data, how can we estimate the revenue each airline could gain at specific hubs, find where Odys should start, and see what that revenue depends on?</p>
+    </div>
+
+    <div class="section">
+      <h2>Methodology</h2>
+      <ol class="steps">
+        <li>
+          <strong>Assign catchment airports</strong>
+          Matched each of the six hubs with the smaller airports that feed it, such as BOI, GEG and PDX for SEA.
+        </li>
+        <li>
+          <strong>Filter the flyers</strong>
+          Counted local drivers who would get there faster by eVTOL than by car, and flyers at smaller airports who would do better flying to the hub.
+        </li>
+        <li>
+          <strong>Estimate revenue</strong>
+          Multiplied local flyers by $117 and feeder flyers by $1,500, then divided by each airline's yearly revenue to get the percent increase.
+        </li>
+        <li>
+          <strong>Compare regions</strong>
+          Ran the estimate separately for the Pacific Northwest, Midwest and Texas hubs so that one region's result would not hide another's.
+        </li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>Skills</h2>
+      <p><strong>Python:</strong> Helper functions for total revenue, driver counts, drivers by income group and the most popular census tracts, reusable for other hubs and airlines</p>
+      <p><strong>Geospatial:</strong> Catchment airport assignment and drive times from census tracts to airports</p>
+      <p><strong>Business Analytics:</strong> Revenue estimates from flyer counts and fares, compared against each airline's yearly revenue</p>
+    </div>
+
+    <div class="section">
+      <h2>Results &amp; Business Recommendation</h2>
+      <p>Estimating revenue at six hubs shows where Odys would matter most. The Midwest came out ahead. ORD could add $729M a year for American, a 1.6% increase, and DTW and MSP could add $771M and $359M for Delta, a 2.4% increase together. The Pacific Northwest and Texas hubs added much less, between 0.17% and 0.29% of airline revenue. Feeder flyers drove the result, since each is worth $1,500 against $117 for a local driver, and ORD and DTW have 12 and 11 feeder airports against 3 for SEA.</p>
 
       <div class="demo-card">
         <p class="demo-note">Hub network map. Click a hub to see the airports that feed it and its numbers. Circle size shows how many flyers each hub could serve.</p>
@@ -110,38 +144,27 @@
         <p class="demo-foot">P2P flyers are drivers living near the hub. CE flyers are people at smaller nearby airports who would be routed through the hub. Lift is revenue divided by the airline's last twelve months of revenue as of 9/30/2022.</p>
       </div>
 
-      <p class="demo-foot" style="margin-top:14px;">For the full analysis, use the "View Full Slide Deck" button above.</p>
+      <p style="margin-top:20px;">Because the Midwest lead comes from how many airports feed its hubs, I read it as the strongest place to start, though the numbers rest on the fares used. I offer the following insights:</p>
+      <ol class="steps">
+        <li>Odys should deploy first at ORD, DTW and MSP, where the most flyers and the most revenue are.</li>
+        <li>The business case depends on feeding hubs from smaller airports, so Odys should be offered as a regional feeder service, not a local shuttle.</li>
+        <li>The estimates assume every eligible flyer switches and that fares hold, and feeder lists overlap between hubs, so some flyers may be counted twice. The true figure is likely lower.</li>
+      </ol>
     </div>
 
     <div class="section">
-      <h2>How Did I Do This?</h2>
+      <h2>Next Steps</h2>
       <ol class="steps">
-        <li>
-          <strong>1. Framing the objective</strong>
-          The question Odys and the airlines actually needed answered wasn't "would eVTOLs help" in the abstract — it was where specifically to deploy a limited number of aircraft first, so the analysis had to end in a ranked, hub-by-hub revenue estimate, not just a general feasibility case.
-        </li>
-        <li>
-          <strong>2. Catchment airport assignment</strong>
-          Mapped each major hub (SEA, ORD, DTW, MSP, DFW, IAH) to its catchment airports — the smaller regional/connecting airports that realistically feed passenger volume into it — since an eVTOL's value comes from shortening the regional leg into a hub, not the long-haul leg out of it.
-        </li>
-        <li>
-          <strong>3. Filtering flyer types</strong>
-          Split passenger data into point-to-point (P2P) vs. connecting (CE) flyers, because these two groups respond differently to a new short-hop option — a P2P flyer is a direct revenue opportunity for regional eVTOL service, while a connecting flyer's value depends on whether the eVTOL leg feeds a longer itinerary.
-        </li>
-        <li>
-          <strong>4. Revenue analysis by region</strong>
-          Ran the revenue model separately for three hub groupings — Pacific Northwest (SEA-Tac for Delta), Midwest (DTW &amp; MSP for Delta, ORD for American), and the Houston Triangle (DFW for American, IAH for United) — rather than one blended national number, since catchment density and existing route economics differ enough between regions that averaging them would have hidden the actual best-first-deployment answer.
-        </li>
-        <li>
-          <strong>5. Results</strong>
-          The Midwest came back as the strongest opportunity for both airlines analyzed: Delta could grow annual revenue by an estimated 2.4% integrating eVTOLs at MSP and DTW, and American by 1.6% at ORD — driven by the high number of catchment airports feeding those specific hubs.
-        </li>
-        <li>
-          <strong>6. Supporting tools</strong>
-          Built reusable helper functions (total revenue, driver counts, drivers organized by income group, most popular tracts) so the underlying model could be re-run for other hub/airline combinations beyond the three presented, rather than being a one-off calculation.
-        </li>
+        <li>Check the $117 and $1,500 fares against real ticket prices.</li>
+        <li>Remove flyers counted at more than one hub.</li>
+        <li>Test how revenue changes if only a share of flyers switch, instead of all of them.</li>
+        <li>Add more hubs and airlines using the same helper functions.</li>
       </ol>
     </div>
+
+    <p style="margin-top:44px;">
+      <a class="btn" href="files/odys-evtol-revenue-deck.pdf" target="_blank">View Full Slide Deck (PDF)</a>
+    </p>
 
     <a class="back-link" href="../index.html">&larr; Back to all projects</a>
   </div>
