@@ -10,6 +10,8 @@
 <style>
 #hubMap { height: 430px; border-radius: 6px; border: 1px solid var(--border); background: var(--card-bg); }
 .demo-note { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+.bullets { padding-left: 20px; margin: 10px 0 20px; }
+.bullets li { margin-bottom: 10px; }
 .demo-foot { color: var(--muted); font-size: 12.5px; margin: 12px 0 0; }
 .hub-detail { margin-top: 14px; font-size: 14.5px; }
 .hub-detail h3 { margin: 0 0 6px; font-size: 17px; }
@@ -91,7 +93,7 @@
         </li>
         <li>
           <strong>Estimate revenue</strong>
-          Using fare assumptions of $117 per local flyer and $1,500 per feeder flyer, we multiplied by the flyer counts, then divided by each airline's yearly revenue to get the percent increase.
+          Using the project's set fares of $117 per local flyer and $1,500 per feeder flyer, we multiplied by the flyer counts, then divided by each airline's yearly revenue to get the percent increase.
         </li>
         <li>
           <strong>Compare regions</strong>
@@ -108,7 +110,12 @@
 
     <div class="section">
       <h2>Results &amp; Business Recommendation</h2>
-      <p>Estimating revenue at six hubs shows where Odys would matter most. The Midwest came out ahead. ORD could add $729M a year for American, a 1.6% increase, and DTW and MSP could add $771M and $359M for Delta, a 2.4% increase together. The Pacific Northwest and Texas hubs added much less, between 0.17% and 0.29% of airline revenue. Feeder flyers drove the result, since each is worth $1,500 against $117 for a local driver, and ORD and DTW have 12 and 11 feeder airports against 3 for SEA.</p>
+      <p>Estimating revenue at six hubs shows where Odys would matter most:</p>
+      <ul class="bullets">
+        <li><strong>The Midwest leads.</strong> ORD adds 1.6% to American's yearly revenue, and DTW and MSP together add 2.4% to Delta's.</li>
+        <li><strong>The other regions add far less.</strong> The Pacific Northwest and Texas hubs each add under 0.3%.</li>
+        <li><strong>Feeder flyers drive the result.</strong> Each is worth far more than a local driver, and the Midwest hubs have many more feeder airports than the rest.</li>
+      </ul>
 
       <div class="demo-card">
         <p class="demo-note">Hub network map. Click a hub to see the airports that feed it and its numbers. Circle size shows how many flyers each hub could serve.</p>
@@ -140,21 +147,21 @@
           </table>
         </div>
         <div class="calc-legend"><span><i class="sw sw-p2p"></i>P2P revenue</span><span><i class="sw sw-ce"></i>CE revenue</span><button type="button" class="reset-btn" id="resetCalc">Reset to deck values</button></div>
-        <p class="demo-foot">P2P flyers are drivers living near the hub. CE flyers are people at smaller nearby airports who would be routed through the hub. Lift is revenue divided by the airline's last twelve months of revenue as of 9/30/2022.</p>
-      </div>
+        <p class="demo-foot">P2P: drivers living near the hub<br>CE: people at smaller nearby airports who would be routed through the hub<br>Lift: Revenue/airline's last twelve months of revenue (as of 9/30/2022)</p>
+        </div>
 
-      <p style="margin-top:20px;">Because the Midwest lead comes from how many airports feed its hubs, we read it as the strongest place to start, though the numbers rest on the fares used. We offer the following insights:</p>
+      <p style="margin-top:20px;">Because the Midwest lead comes from how many airports feed its hubs, we read it as the strongest place to start, though the numbers rest on the set fares. We offer the following insights:</p>
       <ol class="steps">
-        <li>Odys should deploy first at ORD, DTW and MSP, where the most flyers and the most revenue are.</li>
-        <li>The business case depends on feeding hubs from smaller airports, so Odys should be offered as a regional feeder service, not a local shuttle.</li>
-        <li>The estimates assume every eligible flyer switches and that fares hold, and feeder lists overlap between hubs, so some flyers may be counted twice. The true figure is likely lower.</li>
+        <li>The Midwest is the ideal area to deploy for both airlines, starting with ORD, DTW and MSP.</li>
+        <li>Most of the value comes from feeding hubs from smaller airports, so a regional feeder role fits Odys best.</li>
+        <li>These are upper-end estimates. They assume every eligible flyer switches and that the set fares are right, and feeder airports overlap between hubs, so some flyers may be counted twice.</li>
       </ol>
     </div>
 
     <div class="section">
       <h2>Next Steps</h2>
       <ol class="steps">
-        <li>Check the $117 and $1,500 fares against real ticket prices.</li>
+        <li>Analyze whether the set fares of $117 and $1,500 are reasonable. The estimates depend on them, so a better-supported price would improve the analysis.</li>
         <li>Remove flyers counted at more than one hub.</li>
         <li>Test how revenue changes if only a share of flyers switch, instead of all of them.</li>
         <li>Add more hubs and airlines using the same helper functions.</li>
